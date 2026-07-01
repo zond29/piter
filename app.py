@@ -2,15 +2,23 @@ import streamlit as st
 import pandas as pd
 import sqlite3
 import random
+import re
 
 DB_NAME = "piter.db"
 
-# Конфигурация категорий и соответствующих красивых эмодзи для заголовков
+# Конфигурация категорий: классы иконок Font Awesome для вкладок и карточек
 CATEGORY_CONFIG = {
-    "Где покушать": {"icon": "fa-solid fa-utensils", "emoji": "🍽️"},
-    "Где погулять": {"icon": "fa-solid fa-map-location-dot", "emoji": "🗺️"},
-    "Выставки":     {"icon": "fa-solid fa-palette", "emoji": "🎨"}
+    "Где покушать": {"icon": "fa-solid fa-utensils"},
+    "Где погулять": {"icon": "fa-solid fa-map-location-dot"},
+    "Выставки":     {"icon": "fa-solid fa-palette"}
 }
+
+# Функция для удаления текстовых эмодзи из названия, чтобы они не двоились и не заменялись Windows-версией
+def remove_emojis(text):
+    if not text:
+        return ""
+    # Удаляем символы эмодзи из строки
+    return re.sub(r'[\u2600-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDC00-\uDFFF]', '', text).strip()
 
 # --- РАБОТА С БАЗОЙ ДАННЫХ ---
 def init_db():
@@ -35,13 +43,15 @@ def delete_place_from_db(place_id):
         conn.execute("DELETE FROM places WHERE id = ?", (place_id,))
 
 def add_place_to_db(name, category, status, image, review):
+    # При сохранении тоже очищаем имя от случайно введенных эмодзи
+    cleaned_name = remove_emojis(name)
     with sqlite3.connect(DB_NAME) as conn:
         conn.execute('''
             INSERT INTO places (name, category, status, image, review)
             VALUES (?, ?, ?, ?, ?)
-        ''', (name, category, status, image, review))
+        ''', (cleaned_name, category, status, image, review))
 
-# Инициализация
+# Инициализация базы данных
 init_db()
 df = load_data()
 
@@ -55,7 +65,7 @@ st.markdown("""
         
         * { font-family: 'Inter', sans-serif; }
         
-        /* ПРЯЧЕМ МЕНЮ STREAMLIT, ССЫЛКУ НА GITHUB И КНОПКУ ДЕПЛОЯ */
+        /* ПРЯЧЕМ СЛУЖЕБНЫЕ ЭЛЕМЕНТЫ STREAMLIT */
         #MainMenu {visibility: hidden;}
         footer {visibility: hidden;}
         header {visibility: hidden;}
@@ -71,47 +81,6 @@ st.markdown("""
             margin-bottom: 0.5rem;
         }
         
-        /* СТИЛЬ ВКЛАДОК С ИКОНКАМИ */
-        div[data-testid="stTabs"] button {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        div[data-testid="stTabs"] button::before {
-            content: "";
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-        
-        /* Вкладка 1: Тарелка */
-        div[data-testid="stTabs"] button:nth-of-type(1)::before {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23aaaaaa' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='7'/%3E%3Cpath d='M3 4v5a3 3 0 0 0 3 3h0m-3-8h4m-2 0v12M21 3v9a2 2 0 0 1-2 2h-1V3'/%3E%3C/svg%3E");
-        }
-        div[data-testid="stTabs"] button:nth-of-type(1)[aria-selected="true"]::before {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23FF4B4B' stroke-width='2' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='7'/%3E%3Cpath d='M3 4v5a3 3 0 0 0 3 3h0m-3-8h4m-2 0v12M21 3v9a2 2 0 0 1-2 2h-1V3'/%3E%3C/svg%3E");
-        }
-
-        /* Вкладка 2: Лес */
-        div[data-testid="stTabs"] button:nth-of-type(2)::before {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23aaaaaa' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m12 3-8 12h16L12 3zM12 15v5M12 7l-5 8h10l-5-8z'/%3E%3C/svg%3E");
-        }
-        div[data-testid="stTabs"] button:nth-of-type(2)[aria-selected="true"]::before {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23FF4B4B' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='m12 3-8 12h16L12 3zM12 15v5M12 7l-5 8h10l-5-8z'/%3E%3C/svg%3E");
-        }
-
-        /* Вкладка 3: Палитра */
-        div[data-testid="stTabs"] button:nth-of-type(3)::before {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23aaaaaa' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.7255 3.09032 17.1962 4.85857 19C5.03451 19.178 5.13254 19.4214 5.1192 19.6705C5.07431 20.5085 5.41473 21.3259 6.03553 21.8536C6.54546 22.2871 7.22106 22.4082 7.82855 22.1741C8.21251 22.0261 8.6366 21.9449 9.07899 21.9449C10.0526 21.9449 10.9419 22.3789 11.5543 23.0699'/%3E%3Ccircle cx='7.5' cy='10.5' r='1.5' fill='%23aaaaaa'/%3E%3Ccircle cx='11.5' cy='7.5' r='1.5' fill='%23aaaaaa'/%3E%3Ccircle cx='16.5' cy='9.5' r='1.5' fill='%23aaaaaa'/%3E%3C/svg%3E");
-        }
-        div[data-testid="stTabs"] button:nth-of-type(3)[aria-selected="true"]::before {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23FF4B4B' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath d='M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 14.7255 3.09032 17.1962 4.85857 19C5.03451 19.178 5.13254 19.4214 5.1192 19.6705C5.07431 20.5085 5.41473 21.3259 6.03553 21.8536C6.54546 22.2871 7.22106 22.4082 7.82855 22.1741C8.21251 22.0261 8.6366 21.9449 9.07899 21.9449C10.0526 21.9449 10.9419 22.3789 11.5543 23.0699'/%3E%3Ccircle cx='7.5' cy='10.5' r='1.5' fill='%23FF4B4B'/%3E%3Ccircle cx='11.5' cy='7.5' r='1.5' fill='%23FF4B4B'/%3E%3Ccircle cx='16.5' cy='9.5' r='1.5' fill='%23FF4B4B'/%3E%3C/svg%3E");
-        }
-
         /* ОБЫЧНАЯ КАРТОЧКА МЕСТА */
         .place-card {
             background-color: #ffffff !important;
@@ -137,6 +106,16 @@ st.markdown("""
             font-weight: 700 !important; 
             margin: 0 0 8px 0;
             font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* КРАСНЫЙ СТИЛЬ ДЛЯ ИКОНОК В ЗАГОЛОВКАХ КАРТОЧЕК */
+        .card-icon {
+            color: #FF4B4B !important;
+            font-size: 1.35rem;
+            display: inline-block;
         }
         
         .place-img { object-fit: cover; border-radius: 12px; width: 100%; height: 200px; margin: 12px 0; }
@@ -144,10 +123,6 @@ st.markdown("""
         .badge-love { background-color: #FFE5E5 !important; color: #FF4B4B !important; }
         .badge-plan { background-color: #EAF2FF !important; color: #1E62FF !important; }
         .place-desc { color: #444444 !important; font-size: 0.95rem; line-height: 1.5; margin-bottom: 15px; }
-        
-        /* Фикс бага с иконками на кнопках удаления */
-        div[data-testid="stTabs"] button::before { content: none !important; }
-        div[data-testid="stTabs"] [data-testid="stHorizontalBlock"] button::before { content: none !important; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -171,12 +146,12 @@ if submit_button and new_name:
     if not new_image:
         new_image = "https://images.unsplash.com/photo-1599946347371-68eb71b16afc?w=800"
     add_place_to_db(new_name.strip(), new_category, new_status, new_image.strip(), new_review.strip())
-    st.success(f"Место '{new_name}' сохранено!")
+    st.success(f"Место '{remove_emojis(new_name)}' сохранено!")
     st.rerun()
 
 st.divider()
 
-# --- БЛОК «НЕ ЗНАЕТЕ КУДА ПОЙТИ?» (РАНДОМАЙЗЕР) ---
+# --- БЛОК РАНДОМАЙЗЕРА ---
 if not df.empty:
     st.markdown("<div style='background: #f9f9f9; padding: 20px; border-radius: 16px; border: 1px solid #eee; margin-bottom: 30px;'>", unsafe_allow_html=True)
     st.markdown("<h3 style='font-weight:700; margin-top:0;'>🎲 Не знаете куда пойти?</h3>", unsafe_allow_html=True)
@@ -190,13 +165,15 @@ if not df.empty:
         if r_row['id'] in df['id'].values:
             status_class = "badge-love" if r_row['status'] == "Любимое место" else "badge-plan"
             r_review = r_row['review'] if r_row['review'] else "Без описания."
-            # Подтягиваем правильный эмодзи по категории
-            r_emoji = CATEGORY_CONFIG.get(r_row['category'], {}).get('emoji', '📍')
+            r_icon_class = CATEGORY_CONFIG.get(r_row['category'], {}).get('icon', 'fa-solid fa-location-dot')
+            
+            # Очищаем имя от встроенных старых эмодзи перед выводом
+            clean_r_name = remove_emojis(r_row['name'])
             
             st.markdown(f"""
             <div class='random-card'>
                 <span class='badge {status_class}'>{r_row['status']}</span>
-                <h4>{r_emoji} {r_row['name']}</h4>
+                <h4><i class='{r_icon_class} card-icon'></i> {clean_r_name}</h4>
                 <img class='place-img' src='{r_row['image']}'>
                 <p class='place-desc'>{r_review}</p>
             </div>
@@ -205,13 +182,13 @@ if not df.empty:
 
 st.divider()
 
-# --- ВЫВОД ТАБОВ ---
+# --- ВЫВОД ТАБОВ И ПОДБОРКИ ---
 if not df.empty:
     st.markdown("<h3 style='font-weight:700;'>Подборка мест</h3>", unsafe_allow_html=True)
     
-    tabs = st.tabs(["Где покушать", "Где погулять", "Выставки"])
+    tabs = st.tabs(["🍴 Где покушать", "🗺️ Где погулять", "🎨 Выставки"])
     
-    def render_grid(filtered_df, current_emoji):
+    def render_grid(filtered_df, icon_class):
         if filtered_df.empty:
             st.info("Тут пока пусто.")
             return
@@ -223,11 +200,13 @@ if not df.empty:
                 status_class = "badge-love" if row['status'] == "Любимое место" else "badge-plan"
                 review_text = row['review'] if row['review'] else "*Нет описания*"
                 
-                # Добавляем эмодзи категории прямо перед именем места
+                # Полностью убираем любые старые эмодзи из текста имени
+                display_name = remove_emojis(row['name'])
+                
                 st.markdown(f"""
                 <div class='place-card'>
                     <span class='badge {status_class}'>{row['status']}</span>
-                    <h4>{current_emoji} {row['name']}</h4>
+                    <h4><i class='{icon_class} card-icon'></i> {display_name}</h4>
                     <img class='place-img' src='{row['image']}'>
                     <p class='place-desc'>{review_text}</p>
                 </div>
@@ -241,7 +220,6 @@ if not df.empty:
 
     for tab, category in zip(tabs, CATEGORY_CONFIG.keys()):
         with tab:
-            # Передаем эмодзи, соответствующий текущей вкладке
-            render_grid(df[df["category"] == category], CATEGORY_CONFIG[category]['emoji'])
+            render_grid(df[df["category"] == category], CATEGORY_CONFIG[category]['icon'])
 else:
     st.info("В базе данных пока пусто. Добавьте первое место через форму выше!")
