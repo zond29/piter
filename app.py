@@ -54,6 +54,13 @@ st.markdown("""
         
         * { font-family: 'Inter', sans-serif; }
         
+        /* ПРЯЧЕМ МЕНЮ STREAMLIT, ССЫЛКУ НА GITHUB И КНОПКУ ДЕПЛОЯ */
+        #MainMenu {visibility: hidden;}
+        footer {visibility: hidden;}
+        header {visibility: hidden;}
+        div[data-testid="stDecoration"] {display: none;}
+        button[title="View source code"] {display: none;}
+        
         .main-title {
             font-size: 2.8rem;
             font-weight: 700;
