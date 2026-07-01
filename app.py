@@ -44,7 +44,7 @@ def add_place_to_db(name, category, status, image, review):
 init_db()
 df = load_data()
 
-st.set_page_config(page_title="Мой идеальный Питер", page_icon="❤️", layout="centered")
+st.set_page_config(page_title="Ходилки бродилки по Питеру", page_icon="❤️", layout="centered")
 
 # --- КРАСИВАЯ СТИЛИЗАЦИЯ ИКОНОК И ИНТЕРФЕЙСА (CSS) ---
 st.markdown("""
