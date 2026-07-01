@@ -5,11 +5,11 @@ import random
 
 DB_NAME = "piter.db"
 
-# Конфигурация категорий
+# Конфигурация категорий и соответствующих красивых эмодзи для заголовков
 CATEGORY_CONFIG = {
-    "Где покушать": {"icon": "fa-solid fa-utensils"},
-    "Где погулять": {"icon": "fa-solid fa-map-location-dot"},
-    "Выставки":     {"icon": "fa-solid fa-palette"}
+    "Где покушать": {"icon": "fa-solid fa-utensils", "emoji": "🍽️"},
+    "Где погулять": {"icon": "fa-solid fa-map-location-dot", "emoji": "🗺️"},
+    "Выставки":     {"icon": "fa-solid fa-palette", "emoji": "🎨"}
 }
 
 # --- РАБОТА С БАЗОЙ ДАННЫХ ---
@@ -71,7 +71,7 @@ st.markdown("""
             margin-bottom: 0.5rem;
         }
         
-        /* СТИЛЬ В КЛАДОК С ИКОНКАМИ */
+        /* СТИЛЬ ВКЛАДОК С ИКОНКАМИ */
         div[data-testid="stTabs"] button {
             display: inline-flex;
             align-items: center;
@@ -122,7 +122,7 @@ st.markdown("""
             box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05);
         }
         
-        /* РАНДОМНАЯ КАРТОЧКА С КРАСНОЙ РАМКОЙ (КАК НА ЛОКАЛКЕ) */
+        /* РАНДОМНАЯ КАРТОЧКА С КРАСНОЙ РАМКОЙ */
         .random-card {
             background-color: #ffffff !important;
             border: 2px solid #FF4B4B !important;
@@ -145,7 +145,7 @@ st.markdown("""
         .badge-plan { background-color: #EAF2FF !important; color: #1E62FF !important; }
         .place-desc { color: #444444 !important; font-size: 0.95rem; line-height: 1.5; margin-bottom: 15px; }
         
-        /* Убираем баг с иконками на кнопках удаления */
+        /* Фикс бага с иконками на кнопках удаления */
         div[data-testid="stTabs"] button::before { content: none !important; }
         div[data-testid="stTabs"] [data-testid="stHorizontalBlock"] button::before { content: none !important; }
     </style>
@@ -176,7 +176,7 @@ if submit_button and new_name:
 
 st.divider()
 
-# --- БЛОК «НЕ ЗНАЕТЕ КУДА ПОЙТИ?» (РАНДОМАЙЗЕР КАК НА ЛОКАЛКЕ) ---
+# --- БЛОК «НЕ ЗНАЕТЕ КУДА ПОЙТИ?» (РАНДОМАЙЗЕР) ---
 if not df.empty:
     st.markdown("<div style='background: #f9f9f9; padding: 20px; border-radius: 16px; border: 1px solid #eee; margin-bottom: 30px;'>", unsafe_allow_html=True)
     st.markdown("<h3 style='font-weight:700; margin-top:0;'>🎲 Не знаете куда пойти?</h3>", unsafe_allow_html=True)
@@ -187,15 +187,16 @@ if not df.empty:
 
     if 'random_place' in st.session_state:
         r_row = st.session_state['random_place']
-        # Проверяем, существует ли ещё это место в бд
         if r_row['id'] in df['id'].values:
             status_class = "badge-love" if r_row['status'] == "Любимое место" else "badge-plan"
             r_review = r_row['review'] if r_row['review'] else "Без описания."
+            # Подтягиваем правильный эмодзи по категории
+            r_emoji = CATEGORY_CONFIG.get(r_row['category'], {}).get('emoji', '📍')
             
             st.markdown(f"""
             <div class='random-card'>
                 <span class='badge {status_class}'>{r_row['status']}</span>
-                <h4>📍 {r_row['name']}</h4>
+                <h4>{r_emoji} {r_row['name']}</h4>
                 <img class='place-img' src='{r_row['image']}'>
                 <p class='place-desc'>{r_review}</p>
             </div>
@@ -210,7 +211,7 @@ if not df.empty:
     
     tabs = st.tabs(["Где покушать", "Где погулять", "Выставки"])
     
-    def render_grid(filtered_df):
+    def render_grid(filtered_df, current_emoji):
         if filtered_df.empty:
             st.info("Тут пока пусто.")
             return
@@ -222,10 +223,11 @@ if not df.empty:
                 status_class = "badge-love" if row['status'] == "Любимое место" else "badge-plan"
                 review_text = row['review'] if row['review'] else "*Нет описания*"
                 
+                # Добавляем эмодзи категории прямо перед именем места
                 st.markdown(f"""
                 <div class='place-card'>
                     <span class='badge {status_class}'>{row['status']}</span>
-                    <h4>{row['name']}</h4>
+                    <h4>{current_emoji} {row['name']}</h4>
                     <img class='place-img' src='{row['image']}'>
                     <p class='place-desc'>{review_text}</p>
                 </div>
@@ -233,13 +235,13 @@ if not df.empty:
                 
                 if st.button(f"🗑 Удалить", key=f"del_{row['id']}", use_container_width=True):
                     delete_place_from_db(row['id'])
-                    # Если удалили место, убираем его и из плашки рандома
                     if 'random_place' in st.session_state and st.session_state['random_place']['id'] == row['id']:
                         del st.session_state['random_place']
                     st.rerun()
 
     for tab, category in zip(tabs, CATEGORY_CONFIG.keys()):
         with tab:
-            render_grid(df[df["category"] == category])
+            # Передаем эмодзи, соответствующий текущей вкладке
+            render_grid(df[df["category"] == category], CATEGORY_CONFIG[category]['emoji'])
 else:
     st.info("В базе данных пока пусто. Добавьте первое место через форму выше!")
