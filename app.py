@@ -13,6 +13,20 @@ CATEGORY_CONFIG = {
     "Выставки":     {"icon": "fa-solid fa-palette"}
 }
 
+# --- НАСТРОЙКА СТРАНИЦЫ И ХАК ДЛЯ ОБНОВЛЕНИЯ ПРЕВЬЮ ---
+st.set_page_config(page_title="Ходилки бродилки по Питеру", page_icon="❤️", layout="centered")
+
+# Этот блок принудительно отдаёт Telegram и ВК правильное название сайта для превью ссылки
+st.markdown("""
+    <head>
+        <meta property="og:title" content="Ходилки бродилки по Питеру" />
+        <meta property="og:description" content="Интерактивный путеводитель по вашим любимым местам Санкт-Петербурга" />
+        <meta name="twitter:title" content="Ходилки бродилки по Питеру" />
+        <meta name="twitter:description" content="Интерактивный путеводитель по вашим любимым местам Санкт-Петербурга" />
+    </head>
+""", unsafe_allow_html=True)
+
+
 # Функция для удаления текстовых эмодзи из названия, чтобы они не двоились и не заменялись Windows-версией
 def remove_emojis(text):
     if not text:
@@ -54,8 +68,6 @@ def add_place_to_db(name, category, status, image, review):
 # Инициализация базы данных
 init_db()
 df = load_data()
-
-st.set_page_config(page_title="Ходилки бродилки по Питеру", page_icon="❤️", layout="centered")
 
 # --- СТИЛИЗАЦИЯ ИНТЕРФЕЙСА (CSS) ---
 st.markdown("""
