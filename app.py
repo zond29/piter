@@ -154,7 +154,7 @@ st.divider()
 # --- БЛОК РАНДОМАЙЗЕРА ---
 if not df.empty:
     st.markdown("<div style='background: #f9f9f9; padding: 20px; border-radius: 16px; border: 1px solid #eee; margin-bottom: 30px;'>", unsafe_allow_html=True)
-    st.markdown("<h3 style='font-weight:700; margin-top:0;'>🎲 Не знаете куда пойти?</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='font-weight:700; margin-top:0;'> Не знаете куда пойти?</h3>", unsafe_allow_html=True)
     
     if st.button("Выбрать случайное место", use_container_width=True):
         random_place = df.sample(n=1).iloc[0]
@@ -186,7 +186,7 @@ st.divider()
 if not df.empty:
     st.markdown("<h3 style='font-weight:700;'>Подборка мест</h3>", unsafe_allow_html=True)
     
-    tabs = st.tabs(["🍴 Где покушать", "🗺️ Где погулять", "🎨 Выставки"])
+    tabs = st.tabs(["Где покушать", "Где погулять", "Выставки"])
     
     def render_grid(filtered_df, icon_class):
         if filtered_df.empty:
