@@ -14,7 +14,7 @@ CATEGORY_CONFIG = {
 # --- НАСТРОЙКА ---
 st.set_page_config(page_title="Ходилки бродилки по Питеру", page_icon="❤️", layout="centered")
 
-# Мета-теги для красивого превью в Telegram/VK
+# Мета-теги для красивого превью
 st.markdown("""
     <head>
         <meta property="og:title" content="Ходилки бродилки по Питеру" />
@@ -22,16 +22,24 @@ st.markdown("""
     </head>
 """, unsafe_allow_html=True)
 
-# CSS: скрываем лишнее, но оставляем кнопку настроек (⋮)
+# --- CSS: СКРЫВАЕМ ЛИШНЕЕ, ОСТАВЛЯЕМ ВЫБОР ТЕМЫ ---
 st.markdown("""
     <style>
+        /* Скрываем логотип Streamlit и меню разработчика */
         #MainMenu {visibility: hidden;}
+        header {visibility: hidden;}
         div[data-testid="stDecoration"] {display: none;}
-        footer {visibility: hidden;}
-        /* Прячем кнопку GitHub */
-        #root > div:nth-child(1) > div > div > div > div > div > div > div > div > a {
-            display: none !important;
+        footer {display: none;}
+        
+        /* Скрываем любые ссылки на GitHub */
+        a[href*="github.com"] { display: none !important; }
+        
+        /* Возвращаем кнопку настроек (⋮), если она была скрыта */
+        [data-testid="stToolbar"] {
+            visibility: visible !important;
+            display: block !important;
         }
+
         .main-title {
             font-size: 2.8rem; font-weight: 700;
             background: linear-gradient(135deg, #FF4B4B, #FF8585);
