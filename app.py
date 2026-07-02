@@ -14,25 +14,28 @@ CATEGORY_CONFIG = {
 # --- НАСТРОЙКА ---
 st.set_page_config(page_title="Ходилки бродилки по Питеру", page_icon="❤️", layout="centered")
 
-# CSS: СКРЫВАЕМ ЛИШНЕЕ, ОСТАВЛЯЕМ ТОЛЬКО МЕНЮ НАСТРОЕК
+# --- CSS: СКРЫВАЕМ ЛИШНЕЕ, ОСТАВЛЯЕМ ВЫБОР ТЕМЫ ---
 st.markdown("""
     <style>
-        /* Скрываем всё, что можно, кроме настроек */
+        /* Скрываем стандартное меню Streamlit */
         #MainMenu {visibility: hidden !important;}
         footer {visibility: hidden !important;}
         div[data-testid="stDecoration"] {display: none !important;}
         
-        /* Скрываем кнопки в заголовке: Share, GitHub, Edit */
-        .stApp [data-testid="stToolbar"] { visibility: visible !important; }
-        .stApp [data-testid="stHeader"] { background: transparent !important; }
-        
-        /* Агрессивное скрытие иконок в header */
-        header button[aria-label="GitHub"],
-        header button[aria-label="Share"],
-        header button[aria-label="Edit app"],
+        /* КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: Скрываем только иконку GitHub */
         header a[href*="github.com"] {
             display: none !important;
         }
+
+        /* Убираем кнопку "View source code" */
+        button[title="View source code"] { display: none !important; }
+
+        /* Убираем кнопку "Share" */
+        button[aria-label="Share"] { display: none !important; }
+        
+        /* Оставляем заголовок (header) видимым для меню настроек (⋮) */
+        header {visibility: visible !important; background: transparent !important;}
+        [data-testid="stToolbar"] {visibility: visible !important;}
 
         .main-title {
             font-size: 2.8rem; font-weight: 700;
