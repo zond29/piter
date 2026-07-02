@@ -3,6 +3,31 @@ import pandas as pd
 import sqlite3
 import re
 
+# --- СКРЫТИЕ ЭЛЕМЕНТОВ STREAMLIT ---
+st.markdown("""
+    <style>
+        /* Скрывает иконки в верхнем правом углу (Share, Star, Edit, GitHub) */
+        [data-testid="stToolbar"] {
+            display: none !important;
+        }
+        
+        /* Скрывает кнопку "Deploy" (если она видна) */
+        [data-testid="stAppDeployButton"] {
+            display: none !important;
+        }
+        
+        /* Скрывает меню в верхнем правом углу */
+        #MainMenu {
+            visibility: hidden !important;
+        }
+        
+        /* Скрывает футер */
+        footer {
+            visibility: hidden !important;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 DB_NAME = "piter.db"
 
 CATEGORY_CONFIG = {
@@ -14,29 +39,9 @@ CATEGORY_CONFIG = {
 # --- НАСТРОЙКА ---
 st.set_page_config(page_title="Ходилки бродилки по Питеру", page_icon="❤️", layout="centered")
 
-# --- CSS: СКРЫВАЕМ ЛИШНЕЕ, ОСТАВЛЯЕМ ВЫБОР ТЕМЫ ---
+# --- СТИЛИ КАРТОЧЕК ---
 st.markdown("""
     <style>
-        /* Скрываем стандартное меню Streamlit */
-        #MainMenu {visibility: hidden !important;}
-        footer {visibility: hidden !important;}
-        div[data-testid="stDecoration"] {display: none !important;}
-        
-        /* КЛЮЧЕВОЕ ИЗМЕНЕНИЕ: Скрываем только иконку GitHub */
-        header a[href*="github.com"] {
-            display: none !important;
-        }
-
-        /* Убираем кнопку "View source code" */
-        button[title="View source code"] { display: none !important; }
-
-        /* Убираем кнопку "Share" */
-        button[aria-label="Share"] { display: none !important; }
-        
-        /* Оставляем заголовок (header) видимым для меню настроек (⋮) */
-        header {visibility: visible !important; background: transparent !important;}
-        [data-testid="stToolbar"] {visibility: visible !important;}
-
         .main-title {
             font-size: 2.8rem; font-weight: 700;
             background: linear-gradient(135deg, #FF4B4B, #FF8585);
@@ -46,11 +51,9 @@ st.markdown("""
         .place-card { background-color: #ffffff !important; border: 1px solid #E0E0E0; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.05); }
         .random-card { background-color: #ffffff !important; border: 2px solid #FF4B4B !important; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0px 4px 25px rgba(255, 75, 75, 0.15); }
         .place-card h4, .random-card h4 { color: #1A1A1A !important; font-weight: 700 !important; margin: 0 0 8px 0; font-size: 1.5rem; display: flex; align-items: center; gap: 10px; }
-        .card-icon { color: #FF4B4B !important; font-size: 1.35rem; }
         .place-img { object-fit: cover; border-radius: 12px; width: 100%; height: 200px; margin: 12px 0; }
         .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; margin-bottom: 10px; }
         .badge-love { background-color: #FFE5E5 !important; color: #FF4B4B !important; }
-        .badge-plan { background-color: #EAF2FF !important; color: #1E62FF !important; }
         .place-desc { color: #444444 !important; font-size: 0.95rem; line-height: 1.5; margin-bottom: 15px; }
     </style>
 """, unsafe_allow_html=True)
