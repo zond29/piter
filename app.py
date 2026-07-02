@@ -12,7 +12,7 @@ st.markdown("""
     <style>
         [data-testid="stToolbar"], [data-testid="stAppDeployButton"], #MainMenu, footer {display: none !important;}
         .main-title {font-size: 2.8rem; font-weight: 700; background: linear-gradient(135deg, #FF4B4B, #FF8585); -webkit-background-clip: text; -webkit-text-fill-color: transparent;}
-        .place-card {background: #fff; border: 1px solid #e0e0e0; border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);}
+        .place-card { background-color: var(--background-color); border: 1px solid var(--secondary-background-color); ... }
         .place-img {object-fit: cover; border-radius: 12px; width: 100%; height: 200px; margin: 12px 0;}
     </style>
 """, unsafe_allow_html=True)
