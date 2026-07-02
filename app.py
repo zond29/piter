@@ -14,31 +14,23 @@ CATEGORY_CONFIG = {
 # --- НАСТРОЙКА ---
 st.set_page_config(page_title="Ходилки бродилки по Питеру", page_icon="❤️", layout="centered")
 
-# Мета-теги для красивого превью
-st.markdown("""
-    <head>
-        <meta property="og:title" content="Ходилки бродилки по Питеру" />
-        <meta property="og:description" content="Интерактивный путеводитель по любимым местам Санкт-Петербурга" />
-    </head>
-""", unsafe_allow_html=True)
-
 # --- CSS: СКРЫВАЕМ ЛИШНЕЕ, ОСТАВЛЯЕМ ВЫБОР ТЕМЫ ---
 st.markdown("""
     <style>
-        /* Скрываем логотип Streamlit и меню разработчика */
+        /* Скрываем всё, кроме заголовка с меню настроек */
         #MainMenu {visibility: hidden;}
-        header {visibility: hidden;}
+        footer {visibility: hidden;}
         div[data-testid="stDecoration"] {display: none;}
-        footer {display: none;}
         
-        /* Скрываем любые ссылки на GitHub */
+        /* Принудительно скрываем иконку GitHub */
         a[href*="github.com"] { display: none !important; }
         
-        /* Возвращаем кнопку настроек (⋮), если она была скрыта */
-        [data-testid="stToolbar"] {
-            visibility: visible !important;
-            display: block !important;
-        }
+        /* Скрываем кнопку "View source code" */
+        button[title="View source code"] { display: none !important; }
+        
+        /* Обеспечиваем видимость меню настроек (⋮) */
+        header {visibility: visible !important; background: transparent !important;}
+        [data-testid="stToolbar"] {visibility: visible !important;}
 
         .main-title {
             font-size: 2.8rem; font-weight: 700;
