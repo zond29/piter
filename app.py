@@ -14,23 +14,25 @@ CATEGORY_CONFIG = {
 # --- НАСТРОЙКА ---
 st.set_page_config(page_title="Ходилки бродилки по Питеру", page_icon="❤️", layout="centered")
 
-# --- CSS: СКРЫВАЕМ ЛИШНЕЕ, ОСТАВЛЯЕМ ВЫБОР ТЕМЫ ---
+# CSS: СКРЫВАЕМ ЛИШНЕЕ, ОСТАВЛЯЕМ ТОЛЬКО МЕНЮ НАСТРОЕК
 st.markdown("""
     <style>
-        /* Скрываем всё, кроме заголовка с меню настроек */
-        #MainMenu {visibility: hidden;}
-        footer {visibility: hidden;}
-        div[data-testid="stDecoration"] {display: none;}
+        /* Скрываем всё, что можно, кроме настроек */
+        #MainMenu {visibility: hidden !important;}
+        footer {visibility: hidden !important;}
+        div[data-testid="stDecoration"] {display: none !important;}
         
-        /* Принудительно скрываем иконку GitHub */
-        a[href*="github.com"] { display: none !important; }
+        /* Скрываем кнопки в заголовке: Share, GitHub, Edit */
+        .stApp [data-testid="stToolbar"] { visibility: visible !important; }
+        .stApp [data-testid="stHeader"] { background: transparent !important; }
         
-        /* Скрываем кнопку "View source code" */
-        button[title="View source code"] { display: none !important; }
-        
-        /* Обеспечиваем видимость меню настроек (⋮) */
-        header {visibility: visible !important; background: transparent !important;}
-        [data-testid="stToolbar"] {visibility: visible !important;}
+        /* Агрессивное скрытие иконок в header */
+        header button[aria-label="GitHub"],
+        header button[aria-label="Share"],
+        header button[aria-label="Edit app"],
+        header a[href*="github.com"] {
+            display: none !important;
+        }
 
         .main-title {
             font-size: 2.8rem; font-weight: 700;
