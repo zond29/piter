@@ -35,7 +35,7 @@ with st.expander("➕ Добавить новое место"):
         col1, col2 = st.columns(2)
         cat = col1.selectbox("Категория:", CATEGORIES)
         stat = col2.selectbox("Статус:", ["Хочу посетить", "Любимое место"])
-        img = st.text_input("Ссылка на фото:", "https://images.unsplash.com/photo-1599946347371-68eb71b16afc?w=800")
+        img = st.text_input("Ссылка на фото (URL):")
         rev = st.text_area("Описание:")
         if st.form_submit_button("Сохранить"):
             execute_query('INSERT INTO places (name, category, status, image, review) VALUES (?, ?, ?, ?, ?)', (name, cat, stat, img, rev))
