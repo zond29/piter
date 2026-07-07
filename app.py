@@ -215,6 +215,15 @@ div[class*="st-key-card_"] > div:nth-child(3) button {{
     border: 1px solid var(--border) !important;
     background-color: var(--card-bg) !important;
     box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
+    opacity: 0.5;
+    filter: grayscale(1);
+    transition: opacity 0.2s ease, filter 0.2s ease !important;
+}}
+div[class*="st-key-card_"] > div:nth-child(2) button:hover,
+div[class*="st-key-card_"] > div:nth-child(3) button:hover {{
+    opacity: 1;
+    filter: none;
+    border-color: #FF4B4B !important;
 }}
 div[class*="st-key-card_"] > div:nth-child(2) button p,
 div[class*="st-key-card_"] > div:nth-child(3) button p {{
@@ -301,13 +310,13 @@ if not df.empty:
                     render_card(row)
 
                     if st.button("✏️", key=f"edit_{row['id']}"):
-                        st.session_state[f"edit_{row['id']}"] = True
+                        st.session_state[f"show_edit_{row['id']}"] = True
                         st.rerun()
                     if st.button("🗑", key=f"del_{row['id']}"):
                         delete_place_from_db(row['id'])
                         st.rerun()
 
-                if st.session_state.get(f"edit_{row['id']}"):
+                if st.session_state.get(f"show_edit_{row['id']}"):
                     with st.form(f"f_{row['id']}"):
                         n_name = st.text_input("Название", row['name'])
                         n_status = st.selectbox(
@@ -320,7 +329,7 @@ if not df.empty:
                         n_review = st.text_area("Описание", row['review'])
                         if st.form_submit_button("Сохранить"):
                             update_place_in_db(row['id'], n_name, n_status, n_image, n_review)
-                            st.session_state[f"edit_{row['id']}"] = False
+                            st.session_state[f"show_edit_{row['id']}"] = False
                             st.rerun()
 
     with tab_eat:
