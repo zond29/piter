@@ -114,14 +114,14 @@ DARK_STREAMLIT_VARS = """
 """
 
 if st.session_state.theme == "Светлая":
-    theme_vars_css = f":root {{ {LIGHT_VARS} {LIGHT_STREAMLIT_VARS} }}"
+    theme_vars_css = f":root {{ {LIGHT_VARS} {LIGHT_STREAMLIT_VARS} color-scheme: light; }}"
 elif st.session_state.theme == "Тёмная":
-    theme_vars_css = f":root {{ {DARK_VARS} {DARK_STREAMLIT_VARS} }}"
+    theme_vars_css = f":root {{ {DARK_VARS} {DARK_STREAMLIT_VARS} color-scheme: dark; }}"
 else:  # Системная
     theme_vars_css = f"""
-    :root {{ {LIGHT_VARS} {LIGHT_STREAMLIT_VARS} }}
+    :root {{ {LIGHT_VARS} {LIGHT_STREAMLIT_VARS} color-scheme: light; }}
     @media (prefers-color-scheme: dark) {{
-        :root {{ {DARK_VARS} {DARK_STREAMLIT_VARS} }}
+        :root {{ {DARK_VARS} {DARK_STREAMLIT_VARS} color-scheme: dark; }}
     }}
     """
 
@@ -160,6 +160,28 @@ FULL_CSS = f"""
 .stSubheader,
 [data-testid="stMarkdownContainer"] h3 {{
     color: var(--text) !important;
+}}
+
+/* Усиленное правило для вкладок: перекрывает системную тёмную/светлую
+   тему телефона, из-за которой неактивные вкладки становились белыми
+   на белом фоне */
+[data-baseweb="tab-list"] {{
+    background-color: transparent !important;
+}}
+[data-baseweb="tab"],
+[data-baseweb="tab"] * {{
+    color: var(--text) !important;
+    opacity: 1 !important;
+}}
+[data-baseweb="tab"][aria-selected="true"],
+[data-baseweb="tab"][aria-selected="true"] * {{
+    color: #FF4B4B !important;
+}}
+[data-baseweb="tab-highlight"] {{
+    background-color: #FF4B4B !important;
+}}
+[data-baseweb="tab-border"] {{
+    background-color: var(--border) !important;
 }}
 
 .main-title {{
