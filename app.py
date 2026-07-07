@@ -294,9 +294,9 @@ div[class*="st-key-card_"] > div:nth-child(3) button:hover {{
 }}
 div[class*="st-key-theme_toggle_btn"] {{
     position: fixed;
-    top: 14px;
+    top: 70px;
     right: 18px;
-    z-index: 1000;
+    z-index: 999999;
     width: auto !important;
 }}
 div[class*="st-key-theme_toggle_btn"] button {{
