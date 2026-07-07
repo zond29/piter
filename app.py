@@ -77,11 +77,11 @@ init_db()
 
 st.set_page_config(page_title="Ходилки бродилки по Питеру", page_icon="❤️", layout="centered")
 
-
+# ---------- ТЕМА ----------
 if "theme" not in st.session_state:
     st.session_state.theme = "Системная"
 
-
+# Переменные для наших собственных карточек (.place-card и т.д.)
 LIGHT_VARS = """
 --page-bg: #FFFFFF;
 --card-bg: #FFFFFF;
@@ -101,7 +101,9 @@ DARK_VARS = """
 --shadow-hover: rgba(0,0,0,0.5);
 """
 
-
+# Переменные самого Streamlit (их используют встроенные элементы:
+# вкладки, подписи полей, заголовки st.subheader/st.expander и т.д.)
+# Без этого переопределения они могли оставаться белыми на светлом фоне.
 LIGHT_STREAMLIT_VARS = """
 --text-color: #1A1A1A;
 --background-color: #FFFFFF;
@@ -117,7 +119,7 @@ if st.session_state.theme == "Светлая":
     theme_vars_css = f":root {{ {LIGHT_VARS} {LIGHT_STREAMLIT_VARS} }}"
 elif st.session_state.theme == "Тёмная":
     theme_vars_css = f":root {{ {DARK_VARS} {DARK_STREAMLIT_VARS} }}"
-else:  
+else:  # Системная
     theme_vars_css = f"""
     :root {{ {LIGHT_VARS} {LIGHT_STREAMLIT_VARS} }}
     @media (prefers-color-scheme: dark) {{
@@ -299,27 +301,20 @@ div[class*="st-key-card_"] > div:nth-child(3) button p {{
 st.markdown(f"<style>{clean_css(FULL_CSS)}</style>", unsafe_allow_html=True)
 
 
-col_title, col_sun, col_moon, col_sys = st.columns([6, 1, 1, 1])
+THEME_ORDER = ["Системная", "Светлая", "Тёмная"]
+THEME_ICONS = {"Системная": "💻", "Светлая": "☀️", "Тёмная": "🌙"}
+
+col_title, col_theme = st.columns([7, 1])
 with col_title:
     st.markdown("<h1 class='main-title'>Ходилки бродилки по Питеру</h1>", unsafe_allow_html=True)
-with col_sun:
-    label = "☀️ •" if st.session_state.theme == "Светлая" else "☀️"
-    if st.button(label, key="theme_light_btn"):
-        st.session_state.theme = "Светлая"
-        st.rerun()
-with col_moon:
-    label = "🌙 •" if st.session_state.theme == "Тёмная" else "🌙"
-    if st.button(label, key="theme_dark_btn"):
-        st.session_state.theme = "Тёмная"
-        st.rerun()
-with col_sys:
-    label = "💻 •" if st.session_state.theme == "Системная" else "💻"
-    if st.button(label, key="theme_system_btn"):
-        st.session_state.theme = "Системная"
+with col_theme:
+    if st.button(THEME_ICONS[st.session_state.theme], key="theme_toggle_btn"):
+        current_idx = THEME_ORDER.index(st.session_state.theme)
+        st.session_state.theme = THEME_ORDER[(current_idx + 1) % len(THEME_ORDER)]
         st.rerun()
 
 
-with st.expander(" Добавить новое место", expanded=False):
+with st.expander("➕ Добавить новое место", expanded=False):
     with st.form("add_place_form", clear_on_submit=True):
         new_name = st.text_input("Название места:")
         col_cat, col_stat = st.columns(2)
@@ -394,7 +389,7 @@ if not df.empty:
                     st.rerun()
 
     st.markdown("<br><h3 style='font-weight:700;'>Подборка мест</h3>", unsafe_allow_html=True)
-    tab_eat, tab_walk, tab_exh = st.tabs([" Где поесть", " Где погулять", " Музеи"])
+    tab_eat, tab_walk, tab_exh = st.tabs(["🍽 Где поесть", "🚶 Где погулять", "🖼 Музеи"])
 
     def render_grid(filtered_df):
         if filtered_df.empty:
