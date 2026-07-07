@@ -166,7 +166,7 @@ FULL_CSS = f"""
     margin-bottom: 10px;
 }}
 
-/* Обводка обычных кнопок (форма добавления, случайное место) */
+
 div[data-testid="stButton"] button {{
     border: 1px solid var(--border) !important;
     border-radius: 10px !important;
@@ -187,7 +187,7 @@ div[data-testid="stButton"] button p {{
     font-size: 0.82rem !important;
 }}
 
-/* Карточка места + иконки редактирования/удаления поверх неё в правом верхнем углу */
+
 div[class*="st-key-card_"] {{
     position: relative;
 }}
@@ -235,7 +235,7 @@ st.markdown(f"<style>{clean_css(FULL_CSS)}</style>", unsafe_allow_html=True)
 
 
 st.markdown("<h1 class='main-title'>Ходилки бродилки по Питеру</h1>", unsafe_allow_html=True)
-st.markdown("<div class='subtitle'>📍 Подборка мест</div>", unsafe_allow_html=True)
+
 
 
 with st.expander("➕ Добавить новое место", expanded=False):
@@ -295,8 +295,8 @@ if not df.empty:
             random_place = df.iloc[random.randint(0, len(df) - 1)]
             render_card(random_place)
 
-    st.markdown("<br><h3 style='font-weight:700;'>Все места</h3>", unsafe_allow_html=True)
-    tab_eat, tab_walk, tab_exh = st.tabs(["🍽 Где покушать", "🚶 Где погулять", "🖼 Выставки"])
+    st.markdown("<br><h3 style='font-weight:700;'>Подборка мест</h3>", unsafe_allow_html=True)
+    tab_eat, tab_walk, tab_exh = st.tabs([" Где поесть", " Где погулять", " Музеи"])
 
     def render_grid(filtered_df):
         if filtered_df.empty:
@@ -333,12 +333,12 @@ if not df.empty:
                             st.rerun()
 
     with tab_eat:
-        render_grid(df[df["category"] == "Где покушать"])
+        render_grid(df[df["category"] == "Где поесть"])
 
     with tab_walk:
         render_grid(df[df["category"] == "Где погулять"])
 
     with tab_exh:
-        render_grid(df[df["category"] == "Выставка"])
+        render_grid(df[df["category"] == "Музеи"])
 else:
     st.info("В базе данных пока пусто. Добавьте первое место через форму выше!")
