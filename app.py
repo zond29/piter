@@ -77,11 +77,11 @@ init_db()
 
 st.set_page_config(page_title="Ходилки бродилки по Питеру", page_icon="❤️", layout="centered")
 
-# ---------- ТЕМА ----------
+
 if "theme" not in st.session_state:
     st.session_state.theme = "Системная"
 
-# Переменные для наших собственных карточек (.place-card и т.д.)
+
 LIGHT_VARS = """
 --page-bg: #FFFFFF;
 --card-bg: #FFFFFF;
@@ -101,9 +101,7 @@ DARK_VARS = """
 --shadow-hover: rgba(0,0,0,0.5);
 """
 
-# Переменные самого Streamlit (их используют встроенные элементы:
-# вкладки, подписи полей, заголовки st.subheader/st.expander и т.д.)
-# Без этого переопределения они могли оставаться белыми на светлом фоне.
+
 LIGHT_STREAMLIT_VARS = """
 --text-color: #1A1A1A;
 --background-color: #FFFFFF;
@@ -321,7 +319,7 @@ st.markdown(f"<style>{clean_css(FULL_CSS)}</style>", unsafe_allow_html=True)
 
 st.markdown("<h1 class='main-title'>Ходилки бродилки по Питеру</h1>", unsafe_allow_html=True)
 
-theme_icon = "🌙" if st.session_state.theme == "Тёмная" else "☀️"
+theme_icon = "☽" if st.session_state.theme == "Тёмная" else "☀︎"
 if st.button(theme_icon, key="theme_toggle_btn"):
     st.session_state.theme = "Светлая" if st.session_state.theme == "Тёмная" else "Тёмная"
     st.rerun()
@@ -377,10 +375,7 @@ def render_card(row):
     """, unsafe_allow_html=True)
 
 
-# Загружаем данные и сразу отсекаем записи с категориями, которых больше нет
-# в CATEGORY_ICONS (например, оставшиеся в базе от старых названий категорий).
-# Без этого рандомайзер мог предложить место, которое не отображается
-# ни в одной вкладке "Подборки мест".
+
 df = get_data()
 df = df[df["category"].isin(CATEGORY_ICONS.keys())].reset_index(drop=True)
 df = df[df["category"].isin(CATEGORY_ICONS.keys())].reset_index(drop=True)
@@ -402,7 +397,7 @@ if not df.empty:
                     st.rerun()
 
     st.markdown("<br><h3 style='font-weight:700;'>Подборка мест</h3>", unsafe_allow_html=True)
-    tab_eat, tab_walk, tab_exh = st.tabs(["🍽 Где поесть", "🚶 Где погулять", "🖼 Музеи"])
+    tab_eat, tab_walk, tab_exh = st.tabs([" Где поесть", " Где погулять", " Музеи"])
 
     def render_grid(filtered_df):
         if filtered_df.empty:
