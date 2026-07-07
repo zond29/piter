@@ -166,15 +166,16 @@ FULL_CSS = f"""
     margin-bottom: 10px;
 }}
 
-/* Обводка кнопок — такая же рамка, как у карточек места */
+/* Обводка кнопок — такая же рамка, как у карточек места, но компактнее */
 div[data-testid="stButton"] button {{
     border: 1px solid var(--border) !important;
-    border-radius: 14px !important;
+    border-radius: 10px !important;
     background-color: var(--card-bg) !important;
     color: var(--text) !important;
-    font-weight: 600 !important;
-    padding: 10px 0 !important;
-    box-shadow: 0px 2px 8px var(--shadow) !important;
+    font-weight: 500 !important;
+    padding: 4px 0 !important;
+    min-height: 0 !important;
+    box-shadow: 0px 1px 4px var(--shadow) !important;
     transition: border-color 0.2s ease, color 0.2s ease !important;
 }}
 div[data-testid="stButton"] button:hover {{
@@ -183,6 +184,15 @@ div[data-testid="stButton"] button:hover {{
 }}
 div[data-testid="stButton"] button p {{
     color: inherit !important;
+    font-size: 0.82rem !important;
+}}
+
+/* Кнопки редактирования/удаления под карточкой места — ещё компактнее и с меньшим отступом сверху */
+.place-card + div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button {{
+    padding: 2px 0 !important;
+}}
+.place-card + div[data-testid="stHorizontalBlock"] {{
+    margin-top: -8px;
 }}
 """
 
@@ -190,6 +200,7 @@ st.markdown(f"<style>{clean_css(FULL_CSS)}</style>", unsafe_allow_html=True)
 
 
 st.markdown("<h1 class='main-title'>Ходилки бродилки по Питеру</h1>", unsafe_allow_html=True)
+st.markdown("<div class='subtitle'>📍 Подборка мест</div>", unsafe_allow_html=True)
 
 
 with st.expander("➕ Добавить новое место", expanded=False):
@@ -249,8 +260,8 @@ if not df.empty:
             random_place = df.iloc[random.randint(0, len(df) - 1)]
             render_card(random_place)
 
-    st.markdown("<br><h3 style='font-weight:700;'> Подборка мест</h3>", unsafe_allow_html=True)
-    tab_eat, tab_walk, tab_exh = st.tabs([" Где покушать", " Где погулять", " Выставки"])
+    st.markdown("<br><h3 style='font-weight:700;'>Все места</h3>", unsafe_allow_html=True)
+    tab_eat, tab_walk, tab_exh = st.tabs(["🍽 Где покушать", "🚶 Где погулять", "🖼 Выставки"])
 
     def render_grid(filtered_df):
         if filtered_df.empty:
