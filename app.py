@@ -148,11 +148,11 @@ FULL_CSS = f"""
 [data-testid="stToolbar"], [data-testid="stAppDeployButton"], #MainMenu, footer {{ display: none !important; }}
 
 [data-testid="stAppViewContainer"], [data-testid="stMain"], [data-testid="stSidebar"] {{
-    background-color: var(--page-bg);
-    color: var(--text);
+    background-color: var(--page-bg) !important;
+    color: var(--text) !important;
 }}
 
-/* Исправления для iPhone (Safari) */
+/* Фикс вкладок для Safari */
 div[data-baseweb="tab-list"] {{ border-bottom: 1px solid var(--border) !important; background: transparent !important; }}
 button[data-baseweb="tab"] {{ color: var(--text) !important; background-color: transparent !important; border: none !important; }}
 button[data-baseweb="tab"][aria-selected="true"] {{ color: #FF4B4B !important; border-bottom: 2px solid #FF4B4B !important; }}
@@ -183,13 +183,13 @@ button[data-baseweb="tab"][aria-selected="true"] {{ color: #FF4B4B !important; b
 }}
 
 .place-card {{
-    background-color: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 16px 18px;
-    margin-bottom: 16px;
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 16px !important;
+    padding: 16px 18px !important;
+    margin-bottom: 16px !important;
     max-width: 420px;
-    box-shadow: 0px 4px 16px var(--shadow);
+    box-shadow: 0px 4px 16px var(--shadow) !important;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }}
 
@@ -229,7 +229,7 @@ button[data-baseweb="tab"][aria-selected="true"] {{ color: #FF4B4B !important; b
 .badge-plan {{ background-color: #EAF2FF; color: #1E62FF; }}
 
 .place-desc {{
-    color: var(--desc-text);
+    color: var(--desc-text) !important;
     font-size: 0.92rem;
     line-height: 1.5;
     margin-bottom: 10px;
