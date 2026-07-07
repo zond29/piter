@@ -117,7 +117,7 @@ if st.session_state.theme == "Светлая":
     theme_vars_css = f":root {{ {LIGHT_VARS} {LIGHT_STREAMLIT_VARS} color-scheme: light; }}"
 elif st.session_state.theme == "Тёмная":
     theme_vars_css = f":root {{ {DARK_VARS} {DARK_STREAMLIT_VARS} color-scheme: dark; }}"
-else:  # Системная
+else:  
     theme_vars_css = f"""
     :root {{ {LIGHT_VARS} {LIGHT_STREAMLIT_VARS} color-scheme: light; }}
     @media (prefers-color-scheme: dark) {{
@@ -149,15 +149,24 @@ FULL_CSS = f"""
     color: var(--text);
 }}
 
-/* Исправление вкладок */
-[data-baseweb="tab"] {{
+/* Усиленное исправление вкладок для всех состояний */
+button[data-baseweb="tab"] {{
+    background-color: transparent !important;
     color: var(--text) !important;
+    border: none !important;
 }}
 
-[data-baseweb="tab-list"] button[aria-selected="true"] {{
-    color: #FF4B4B !important; /* Цвет активной вкладки */
+button[data-baseweb="tab"][aria-selected="true"] {{
+    color: #FF4B4B !important;
+    border-bottom: 2px solid #FF4B4B !important;
 }}
 
+div[data-baseweb="tab-list"] {{
+    background-color: transparent !important;
+    border-bottom: 1px solid var(--border) !important;
+}}
+
+/* Общие элементы */
 [data-baseweb="tab"] p,
 [data-testid="stWidgetLabel"] p,
 [data-testid="stExpander"] summary,
@@ -328,7 +337,7 @@ if st.button(theme_icon, key="theme_toggle_btn"):
     st.rerun()
 
 
-with st.expander("➕ Добавить новое место", expanded=False):
+with st.expander(" Добавить новое место", expanded=False):
     with st.form("add_place_form", clear_on_submit=True):
         new_name = st.text_input("Название места:")
         col_cat, col_stat = st.columns(2)
