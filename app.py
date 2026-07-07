@@ -241,7 +241,7 @@ st.markdown(f"<style>{clean_css(FULL_CSS)}</style>", unsafe_allow_html=True)
 st.markdown("<h1 class='main-title'>Ходилки бродилки по Питеру</h1>", unsafe_allow_html=True)
 
 
-with st.expander("➕ Добавить новое место", expanded=False):
+with st.expander(" Добавить новое место", expanded=False):
     with st.form("add_place_form", clear_on_submit=True):
         new_name = st.text_input("Название места:")
         col_cat, col_stat = st.columns(2)
