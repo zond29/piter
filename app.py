@@ -1,25 +1,81 @@
 import streamlit as st
 import pandas as pd
 import sqlite3
+import random
 
-DB_PATH = "piter.db"
+DB_NAME = "piter.db"
 
-DEFAULT_IMAGES = {
-    "Где покушать": "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800",
-    "Где погулять": "https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?w=800",
-    "Выставки": "https://images.unsplash.com/photo-1572621483863-7186638061a7?w=800"
-}
-CATEGORY_CONFIG = {
-    "Где покушать": "fa-solid fa-utensils",
+CATEGORY_ICONS = {
+    "Где покушать": "fa-solid fa-burger",
     "Где погулять": "fa-solid fa-map-location-dot",
-    "Выставки": "fa-solid fa-palette"
-}
-STATUS_CONFIG = {
-    "Хочу посетить": "status-want",
-    "Любимое место": "status-fav"
+    "Выставка": "fa-solid fa-palette",
 }
 
-st.set_page_config(page_title="Ходилки бродилки по Питеру", page_icon="❤️", layout="centered")
+DEFAULT_IMAGE = "https://images.unsplash.com/photo-1599946347371-68eb71b16afc?w=800"
+
+
+# ---------- РАБОТА С БАЗОЙ ДАННЫХ ----------
+def init_db():
+    conn = sqlite3.connect(DB_NAME)
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS places (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            category TEXT NOT NULL,
+            status TEXT NOT NULL,
+            image TEXT,
+            review TEXT
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+
+def load_data():
+    conn = sqlite3.connect(DB_NAME)
+    df = pd.read_sql_query("SELECT * FROM places", conn)
+    conn.close()
+    return df
+
+
+def add_place_to_db(name, category, status, image, review):
+    conn = sqlite3.connect(DB_NAME)
+    conn.execute(
+        "INSERT INTO places (name, category, status, image, review) VALUES (?, ?, ?, ?, ?)",
+        (name, category, status, image, review)
+    )
+    conn.commit()
+    conn.close()
+
+
+def update_place_in_db(place_id, name, status, image, review):
+    conn = sqlite3.connect(DB_NAME)
+    conn.execute(
+        "UPDATE places SET name=?, status=?, image=?, review=? WHERE id=?",
+        (name, status, image, review, place_id)
+    )
+    conn.commit()
+    conn.close()
+
+
+def delete_place_from_db(place_id):
+    conn = sqlite3.connect(DB_NAME)
+    conn.execute("DELETE FROM places WHERE id = ?", (place_id,))
+    conn.commit()
+    conn.close()
+
+
+def clean_css(css: str) -> str:
+    """Убирает отступы у каждой строки, чтобы Streamlit-markdown
+    не принял CSS за индентированный код-блок и не сломал стили."""
+    return "\n".join(line.strip() for line in css.strip("\n").split("\n"))
+
+
+# ---------- СТАРТ ПРИЛОЖЕНИЯ ----------
+init_db()
+df = load_data()
+
+st.set_page_config(page_title="Мой идеальный Питер", page_icon="❤️", layout="centered")
 
 # ---------- ТЕМА ----------
 if "theme" not in st.session_state:
@@ -34,185 +90,229 @@ with st.sidebar:
     )
 
 LIGHT_VARS = """
-    --bg: #FFFFFF;
-    --card-bg: #FFFFFF;
-    --text: #262730;
-    --muted-text: #6b6b6b;
-    --border: #E5E5E5;
-    --shadow: rgba(0,0,0,0.06);
+--page-bg: #FFFFFF;
+--card-bg: #FFFFFF;
+--text: #1A1A1A;
+--desc-text: #444444;
+--border: #E0E0E0;
+--shadow: rgba(0,0,0,0.05);
+--shadow-hover: rgba(0,0,0,0.1);
 """
+
 DARK_VARS = """
-    --bg: #0E1117;
-    --card-bg: #1B1E27;
-    --text: #FAFAFA;
-    --muted-text: #A0A0A5;
-    --border: #2E313C;
-    --shadow: rgba(0,0,0,0.35);
+--page-bg: #0E1117;
+--card-bg: #1B1E27;
+--text: #FAFAFA;
+--desc-text: #C7C7CC;
+--border: #2E313C;
+--shadow: rgba(0,0,0,0.35);
+--shadow-hover: rgba(0,0,0,0.5);
 """
 
 if st.session_state.theme == "Светлая":
-    theme_css = f":root {{{LIGHT_VARS}}}"
+    theme_vars_css = f":root {{ {LIGHT_VARS} }}"
 elif st.session_state.theme == "Тёмная":
-    theme_css = f":root {{{DARK_VARS}}}"
+    theme_vars_css = f":root {{ {DARK_VARS} }}"
 else:  # Системная
-    theme_css = f"""
-        :root {{{LIGHT_VARS}}}
-        @media (prefers-color-scheme: dark) {{
-            :root {{{DARK_VARS}}}
-        }}
+    theme_vars_css = f"""
+    :root {{ {LIGHT_VARS} }}
+    @media (prefers-color-scheme: dark) {{
+        :root {{ {DARK_VARS} }}
+    }}
     """
 
-st.markdown(f"""
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        {theme_css}
+FULL_CSS = f"""
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
-        [data-testid="stToolbar"], [data-testid="stAppDeployButton"], #MainMenu, footer {{display: none !important;}}
+{theme_vars_css}
 
-        [data-testid="stAppViewContainer"], [data-testid="stMain"], [data-testid="stSidebar"] {{
-            background-color: var(--bg);
-            color: var(--text);
-        }}
+* {{ font-family: 'Inter', sans-serif; }}
 
-        .main-title {{
-            font-size: 2.6rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #FF4B4B, #FF8585);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 0;
-        }}
-        .subtitle {{
-            font-size: 1.4rem;
-            font-weight: 600;
-            color: var(--text);
-            margin-top: 4px;
-            margin-bottom: 18px;
-        }}
+[data-testid="stToolbar"], [data-testid="stAppDeployButton"], #MainMenu, footer {{ display: none !important; }}
 
-        .place-card {{
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 16px 18px;
-            margin-bottom: 16px;
-            max-width: 420px;
-            box-shadow: 0 3px 10px var(--shadow);
-        }}
-        .place-title {{
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text);
-            margin-top: 8px;
-        }}
-        .place-desc {{
-            color: var(--muted-text);
-            font-size: 0.95rem;
-            margin-top: 6px;
-        }}
-        .place-img {{
-            object-fit: cover;
-            border-radius: 10px;
-            width: 100%;
-            height: 170px;
-            margin: 10px 0;
-        }}
-        .icon-color {{color: #FF4B4B !important; margin-right: 8px;}}
+[data-testid="stAppViewContainer"], [data-testid="stMain"], [data-testid="stSidebar"] {{
+    background-color: var(--page-bg);
+    color: var(--text);
+}}
 
-        .status-badge {{
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 999px;
-            font-size: 0.78rem;
-            font-weight: 600;
-        }}
-        .status-want {{background: #E7F0FF; color: #2563EB;}}
-        .status-fav {{background: #FFE7EC; color: #E11D48;}}
-    </style>
-""", unsafe_allow_html=True)
+.main-title {{
+    font-size: 2.8rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #FF4B4B, #FF8585);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 0.3rem;
+}}
 
+.subtitle {{
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--text);
+    margin: 6px 0 14px 0;
+}}
 
-def execute_query(query, params=()):
-    with sqlite3.connect(DB_PATH) as conn:
-        conn.execute(query, params)
+.place-card {{
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+    max-width: 420px;
+    box-shadow: 0px 4px 16px var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}}
 
+.place-card:hover {{
+    transform: translateY(-3px);
+    box-shadow: 0px 8px 24px var(--shadow-hover);
+}}
 
-def init_db():
-    execute_query('''CREATE TABLE IF NOT EXISTS places 
-                     (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, category TEXT, status TEXT, image TEXT, review TEXT)''')
+.place-card i {{
+    margin-right: 8px;
+    color: #FF4B4B;
+    font-size: 1.05rem;
+}}
 
+.place-card h3, .place-card h4 {{
+    color: var(--text) !important;
+    font-weight: 700 !important;
+}}
 
-init_db()
+.place-img {{
+    object-fit: cover;
+    border-radius: 12px;
+    width: 100%;
+    height: 170px;
+    margin: 10px 0;
+}}
 
+.badge {{
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-bottom: 10px;
+}}
+.badge-love {{ background-color: #FFE5E5; color: #FF4B4B; }}
+.badge-plan {{ background-color: #EAF2FF; color: #1E62FF; }}
+
+.place-desc {{
+    color: var(--desc-text);
+    font-size: 0.92rem;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}}
+"""
+
+st.markdown(f"<style>{clean_css(FULL_CSS)}</style>", unsafe_allow_html=True)
+
+# ---------- ШАПКА ----------
 st.markdown("<h1 class='main-title'>Ходилки бродилки по Питеру</h1>", unsafe_allow_html=True)
 st.markdown("<div class='subtitle'>📍 Подборка мест</div>", unsafe_allow_html=True)
 
-with st.expander("➕ Добавить новое место"):
-    with st.form("add_form", clear_on_submit=True):
-        name = st.text_input("Название:")
-        c1, c2 = st.columns(2)
-        cat = c1.selectbox("Категория:", list(CATEGORY_CONFIG.keys()))
-        stat = c2.selectbox("Статус:", list(STATUS_CONFIG.keys()))
-        img = st.text_input("Ссылка на фото (оставьте пустым для авто-заполнения):")
-        rev = st.text_area("Описание:")
-        if st.form_submit_button("Сохранить"):
-            final_img = img if img else DEFAULT_IMAGES[cat]
-            execute_query(
-                'INSERT INTO places (name, category, status, image, review) VALUES (?, ?, ?, ?, ?)',
-                (name, cat, stat, final_img, rev)
-            )
-            st.rerun()
+# ---------- ФОРМА ДОБАВЛЕНИЯ ----------
+with st.expander("➕ Добавить новое прикольное место", expanded=False):
+    with st.form("add_place_form", clear_on_submit=True):
+        new_name = st.text_input("Название места:")
+        col_cat, col_stat = st.columns(2)
+        with col_cat:
+            new_category = st.selectbox("Категория:", list(CATEGORY_ICONS.keys()))
+        with col_stat:
+            new_status = st.selectbox("Статус:", ["Хочу посетить", "Любимое место"])
 
-data = pd.read_sql_query("SELECT * FROM places", sqlite3.connect(DB_PATH))
+        new_image = st.text_input("Ссылка на фото (URL, оставьте пустым для авто-заполнения):")
+        new_review = st.text_area("Ваш комментарий / Описание:")
+
+        submit_button = st.form_submit_button(label="Сохранить место", use_container_width=True)
+
+if submit_button:
+    if new_name:
+        final_image = new_image.strip() if new_image else DEFAULT_IMAGE
+        add_place_to_db(
+            new_name.strip(),
+            new_category.strip(),
+            new_status.strip(),
+            final_image,
+            new_review.strip()
+        )
+        st.success(f"Место «{new_name}» успешно сохранено!")
+        st.balloons()
+        st.rerun()
+    else:
+        st.error("Пожалуйста, введите название места!")
+
+st.divider()
+
+
+def badge_class(status):
+    return "badge-love" if status == "Любимое место" else "badge-plan"
 
 
 def render_card(row):
-    badge_class = STATUS_CONFIG.get(row["status"], "status-want")
+    icon = CATEGORY_ICONS.get(row["category"], "fa-solid fa-location-dot")
     desc = row["review"] if row["review"] else "*Нет описания*"
     st.markdown(f"""
-        <div class='place-card'>
-            <span class='status-badge {badge_class}'>{row['status']}</span>
-            <div class='place-title'><i class='{CATEGORY_CONFIG[row['category']]} icon-color'></i>{row['name']}</div>
-            <img class='place-img' src='{row['image']}'>
-            <p class='place-desc'>{desc}</p>
-        </div>
+    <div class='place-card'>
+        <span class='badge {badge_class(row['status'])}'>{row['status']}</span>
+        <h4 style='margin:0 0 8px 0;'><i class="{icon}"></i>{row['name']}</h4>
+        <img class='place-img' src='{row['image']}'>
+        <p class='place-desc'>{desc}</p>
+    </div>
     """, unsafe_allow_html=True)
 
 
-if st.button("🎲 Выбрать случайное место") and not data.empty:
-    r = data.sample(1).iloc[0]
-    render_card(r)
+if not df.empty:
+    with st.container(border=True):
+        st.subheader("🎲 Не знаете куда пойти?")
+        if st.button("Выбрать случайное место", use_container_width=True):
+            random_place = df.iloc[random.randint(0, len(df) - 1)]
+            render_card(random_place)
 
-if not data.empty:
-    tabs = st.tabs(list(CATEGORY_CONFIG.keys()))
-    for tab, cat in zip(tabs, CATEGORY_CONFIG.keys()):
-        with tab:
-            for _, row in data[data["category"] == cat].iterrows():
+    st.markdown("<br><h3 style='font-weight:700;'>Все места</h3>", unsafe_allow_html=True)
+    tab_eat, tab_walk, tab_exh = st.tabs(["🍽 Где покушать", "🚶 Где погулять", "🖼 Выставки"])
+
+    def render_grid(filtered_df):
+        if filtered_df.empty:
+            st.info("Тут пока пусто.")
+            return
+
+        cols = st.columns(2)
+        for idx, (_, row) in enumerate(filtered_df.iterrows()):
+            with cols[idx % 2]:
                 render_card(row)
 
                 c1, c2 = st.columns(2)
-                if c1.button("✏️ Редактировать", key=f"edit_{row['id']}"):
+                if c1.button("✏️ Редактировать", key=f"edit_{row['id']}", use_container_width=True):
                     st.session_state[f"edit_{row['id']}"] = True
-                if c2.button("🗑 Удалить", key=f"del_{row['id']}"):
-                    execute_query("DELETE FROM places WHERE id = ?", (row['id'],))
+                if c2.button("🗑 Удалить", key=f"del_{row['id']}", use_container_width=True):
+                    delete_place_from_db(row['id'])
                     st.rerun()
 
                 if st.session_state.get(f"edit_{row['id']}"):
                     with st.form(f"f_{row['id']}"):
-                        n_n = st.text_input("Название", row['name'])
-                        n_s = st.selectbox(
+                        n_name = st.text_input("Название", row['name'])
+                        n_status = st.selectbox(
                             "Статус",
-                            list(STATUS_CONFIG.keys()),
-                            index=list(STATUS_CONFIG.keys()).index(row['status']) if row['status'] in STATUS_CONFIG else 0
+                            ["Хочу посетить", "Любимое место"],
+                            index=["Хочу посетить", "Любимое место"].index(row['status'])
+                            if row['status'] in ["Хочу посетить", "Любимое место"] else 0
                         )
-                        n_i = st.text_input("Фото", row['image'])
-                        n_r = st.text_area("Описание", row['review'])
+                        n_image = st.text_input("Фото", row['image'])
+                        n_review = st.text_area("Описание", row['review'])
                         if st.form_submit_button("Сохранить"):
-                            execute_query(
-                                "UPDATE places SET name=?, status=?, image=?, review=? WHERE id=?",
-                                (n_n, n_s, n_i, n_r, row['id'])
-                            )
+                            update_place_in_db(row['id'], n_name, n_status, n_image, n_review)
                             st.session_state[f"edit_{row['id']}"] = False
                             st.rerun()
+
+    with tab_eat:
+        render_grid(df[df["category"] == "Где покушать"])
+
+    with tab_walk:
+        render_grid(df[df["category"] == "Где погулять"])
+
+    with tab_exh:
+        render_grid(df[df["category"] == "Выставка"])
 else:
-    st.info("Пока пусто.")
+    st.info("В базе данных пока пусто. Добавьте первое место через форму выше!")
