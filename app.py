@@ -316,7 +316,7 @@ if not df.empty:
                     st.rerun()
 
     st.markdown("<br><h3 style='font-weight:700;'>Подборка мест</h3>", unsafe_allow_html=True)
-    tab_eat, tab_walk, tab_exh = st.tabs(["🍽 Где поесть", "🚶 Где погулять", "🖼 Музеи"])
+    tab_eat, tab_walk, tab_exh = st.tabs([" Где поесть", " Где погулять", " Музеи"])
 
     def render_grid(filtered_df):
         if filtered_df.empty:
