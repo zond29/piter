@@ -78,6 +78,15 @@ FULL_CSS = f"""
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
+:root {{
+    --page-bg: #FFFFFF;
+    --card-bg: #FFFFFF;
+    --text: #1A1A1A;
+    --desc-text: #444444;
+    --border: #E0E0E0;
+    --shadow: rgba(0,0,0,0.05);
+    --shadow-hover: rgba(0,0,0,0.1);
+}}
 
 * {{ font-family: 'Inter', sans-serif; }}
 
@@ -156,13 +165,32 @@ FULL_CSS = f"""
     line-height: 1.5;
     margin-bottom: 10px;
 }}
+
+/* Обводка кнопок — такая же рамка, как у карточек места */
+div[data-testid="stButton"] button {{
+    border: 1px solid var(--border) !important;
+    border-radius: 14px !important;
+    background-color: var(--card-bg) !important;
+    color: var(--text) !important;
+    font-weight: 600 !important;
+    padding: 10px 0 !important;
+    box-shadow: 0px 2px 8px var(--shadow) !important;
+    transition: border-color 0.2s ease, color 0.2s ease !important;
+}}
+div[data-testid="stButton"] button:hover {{
+    border-color: #FF4B4B !important;
+    color: #FF4B4B !important;
+}}
+div[data-testid="stButton"] button p {{
+    color: inherit !important;
+}}
 """
 
 st.markdown(f"<style>{clean_css(FULL_CSS)}</style>", unsafe_allow_html=True)
 
 
 st.markdown("<h1 class='main-title'>Ходилки бродилки по Питеру</h1>", unsafe_allow_html=True)
-st.markdown("<div class='subtitle'> Подборка мест</div>", unsafe_allow_html=True)
+st.markdown("<div class='subtitle'>📍 Подборка мест</div>", unsafe_allow_html=True)
 
 
 with st.expander("➕ Добавить новое место", expanded=False):
