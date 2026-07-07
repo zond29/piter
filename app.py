@@ -292,26 +292,39 @@ div[class*="st-key-card_"] > div:nth-child(3) button:hover {{
     filter: none;
     border-color: #FF4B4B !important;
 }}
-div[class*="st-key-card_"] > div:nth-child(2) button p,
-div[class*="st-key-card_"] > div:nth-child(3) button p {{
-    font-size: 0.95rem !important;
+div[class*="st-key-theme_toggle_btn"] {{
+    position: fixed;
+    top: 14px;
+    right: 18px;
+    z-index: 1000;
+    width: auto !important;
+}}
+div[class*="st-key-theme_toggle_btn"] button {{
+    width: 52px !important;
+    height: 52px !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+    border-radius: 50% !important;
+    border: 1px solid var(--border) !important;
+    background-color: var(--card-bg) !important;
+    box-shadow: 0 3px 10px var(--shadow) !important;
+}}
+div[class*="st-key-theme_toggle_btn"] button p {{
+    font-size: 1.6rem !important;
+    line-height: 1 !important;
 }}
 """
+
 
 st.markdown(f"<style>{clean_css(FULL_CSS)}</style>", unsafe_allow_html=True)
 
 
-THEME_ORDER = ["Системная", "Светлая", "Тёмная"]
-THEME_ICONS = {"Системная": "💻", "Светлая": "☀️", "Тёмная": "🌙"}
+st.markdown("<h1 class='main-title'>Ходилки бродилки по Питеру</h1>", unsafe_allow_html=True)
 
-col_title, col_theme = st.columns([7, 1])
-with col_title:
-    st.markdown("<h1 class='main-title'>Ходилки бродилки по Питеру</h1>", unsafe_allow_html=True)
-with col_theme:
-    if st.button(THEME_ICONS[st.session_state.theme], key="theme_toggle_btn"):
-        current_idx = THEME_ORDER.index(st.session_state.theme)
-        st.session_state.theme = THEME_ORDER[(current_idx + 1) % len(THEME_ORDER)]
-        st.rerun()
+theme_icon = "🌙" if st.session_state.theme == "Тёмная" else "☀️"
+if st.button(theme_icon, key="theme_toggle_btn"):
+    st.session_state.theme = "Светлая" if st.session_state.theme == "Тёмная" else "Тёмная"
+    st.rerun()
 
 
 with st.expander("➕ Добавить новое место", expanded=False):
