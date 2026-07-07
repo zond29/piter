@@ -242,13 +242,13 @@ def badge_class(status):
 
 def render_card(row):
     icon = CATEGORY_ICONS.get(row["category"], "fa-solid fa-location-dot")
-    desc = row["review"] if row["review"] else "*Нет описания*"
+    desc_html = f"<p class='place-desc'>{row['review']}</p>" if row["review"] else ""
     st.markdown(f"""
     <div class='place-card'>
         <span class='badge {badge_class(row['status'])}'>{row['status']}</span>
         <h4 style='margin:0 0 8px 0;'><i class="{icon}"></i>{row['name']}</h4>
         <img class='place-img' src='{row['image']}'>
-        <p class='place-desc'>{desc}</p>
+        {desc_html}
     </div>
     """, unsafe_allow_html=True)
 
@@ -273,12 +273,15 @@ if not df.empty:
             with cols[idx % 2]:
                 render_card(row)
 
-                c1, c2 = st.columns(2)
-                if c1.button("✏️ Редактировать", key=f"edit_{row['id']}", use_container_width=True):
-                    st.session_state[f"edit_{row['id']}"] = True
-                if c2.button("🗑 Удалить", key=f"del_{row['id']}", use_container_width=True):
-                    delete_place_from_db(row['id'])
-                    st.rerun()
+                spacer, menu_col = st.columns([5, 1])
+                with menu_col:
+                    with st.popover("⋯", use_container_width=True):
+                        if st.button("✏️ Редактировать", key=f"edit_{row['id']}", use_container_width=True):
+                            st.session_state[f"edit_{row['id']}"] = True
+                            st.rerun()
+                        if st.button("🗑 Удалить", key=f"del_{row['id']}", use_container_width=True):
+                            delete_place_from_db(row['id'])
+                            st.rerun()
 
                 if st.session_state.get(f"edit_{row['id']}"):
                     with st.form(f"f_{row['id']}"):
