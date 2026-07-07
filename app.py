@@ -275,7 +275,7 @@ if not df.empty:
 
                 spacer, menu_col = st.columns([5, 1])
                 with menu_col:
-                    with st.popover("▾", use_container_width=True):
+                    with st.popover("", use_container_width=True):
                         if st.button("✏️ Редактировать", key=f"edit_{row['id']}", use_container_width=True):
                             st.session_state[f"edit_{row['id']}"] = True
                             st.rerun()
