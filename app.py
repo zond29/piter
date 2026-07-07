@@ -6,9 +6,9 @@ import random
 DB_NAME = "piter.db"
 
 CATEGORY_ICONS = {
-    "Где покушать": "fa-solid fa-burger",
+    "Где поестьь": "fa-solid fa-burger",
     "Где погулять": "fa-solid fa-map-location-dot",
-    "Выставка": "fa-solid fa-palette",
+    "Музеи": "fa-solid fa-palette",
 }
 
 DEFAULT_IMAGE = "https://images.unsplash.com/photo-1599946347371-68eb71b16afc?w=800"
