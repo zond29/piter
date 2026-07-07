@@ -30,11 +30,16 @@ def init_db():
     conn.close()
 
 
+@st.cache_data(ttl=0)
 def load_data():
     conn = sqlite3.connect(DB_NAME)
     df = pd.read_sql_query("SELECT * FROM places", conn)
     conn.close()
     return df
+
+def get_data():
+    st.cache_data.clear()
+    return load_data()
 
 
 def add_place_to_db(name, category, status, image, review):
@@ -69,7 +74,6 @@ def clean_css(css: str) -> str:
 
 
 init_db()
-df = load_data()
 
 st.set_page_config(page_title="Ходилки бродилки по Питеру", page_icon="❤️", layout="centered")
 
@@ -237,7 +241,6 @@ st.markdown(f"<style>{clean_css(FULL_CSS)}</style>", unsafe_allow_html=True)
 st.markdown("<h1 class='main-title'>Ходилки бродилки по Питеру</h1>", unsafe_allow_html=True)
 
 
-
 with st.expander(" Добавить новое место", expanded=False):
     with st.form("add_place_form", clear_on_submit=True):
         new_name = st.text_input("Название места:")
@@ -287,6 +290,8 @@ def render_card(row):
     </div>
     """, unsafe_allow_html=True)
 
+
+df = get_data()
 
 if not df.empty:
     with st.container(border=True):
