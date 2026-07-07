@@ -166,7 +166,7 @@ FULL_CSS = f"""
     margin-bottom: 10px;
 }}
 
-/* Обводка кнопок — такая же рамка, как у карточек места, но компактнее */
+/* Обводка обычных кнопок (форма добавления, случайное место) */
 div[data-testid="stButton"] button {{
     border: 1px solid var(--border) !important;
     border-radius: 10px !important;
@@ -187,12 +187,38 @@ div[data-testid="stButton"] button p {{
     font-size: 0.82rem !important;
 }}
 
-/* Кнопки редактирования/удаления под карточкой места — ещё компактнее и с меньшим отступом сверху */
-.place-card + div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] button {{
-    padding: 2px 0 !important;
+/* Карточка места + иконки редактирования/удаления поверх неё в правом верхнем углу */
+div[class*="st-key-card_"] {{
+    position: relative;
 }}
-.place-card + div[data-testid="stHorizontalBlock"] {{
-    margin-top: -8px;
+div[class*="st-key-card_"] > div:nth-child(2) {{
+    position: absolute;
+    top: 14px;
+    right: 54px;
+    z-index: 2;
+    width: auto !important;
+}}
+div[class*="st-key-card_"] > div:nth-child(3) {{
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    z-index: 2;
+    width: auto !important;
+}}
+div[class*="st-key-card_"] > div:nth-child(2) button,
+div[class*="st-key-card_"] > div:nth-child(3) button {{
+    width: 34px !important;
+    height: 34px !important;
+    padding: 0 !important;
+    min-height: 0 !important;
+    border-radius: 50% !important;
+    border: 1px solid var(--border) !important;
+    background-color: var(--card-bg) !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
+}}
+div[class*="st-key-card_"] > div:nth-child(2) button p,
+div[class*="st-key-card_"] > div:nth-child(3) button p {{
+    font-size: 0.95rem !important;
 }}
 """
 
@@ -271,17 +297,15 @@ if not df.empty:
         cols = st.columns(2)
         for idx, (_, row) in enumerate(filtered_df.iterrows()):
             with cols[idx % 2]:
-                render_card(row)
+                with st.container(key=f"card_{row['id']}"):
+                    render_card(row)
 
-                spacer, menu_col = st.columns([5, 1])
-                with menu_col:
-                    with st.popover("", use_container_width=True):
-                        if st.button("✏️ Редактировать", key=f"edit_{row['id']}", use_container_width=True):
-                            st.session_state[f"edit_{row['id']}"] = True
-                            st.rerun()
-                        if st.button("🗑 Удалить", key=f"del_{row['id']}", use_container_width=True):
-                            delete_place_from_db(row['id'])
-                            st.rerun()
+                    if st.button("✏️", key=f"edit_{row['id']}"):
+                        st.session_state[f"edit_{row['id']}"] = True
+                        st.rerun()
+                    if st.button("🗑", key=f"del_{row['id']}"):
+                        delete_place_from_db(row['id'])
+                        st.rerun()
 
                 if st.session_state.get(f"edit_{row['id']}"):
                     with st.form(f"f_{row['id']}"):
