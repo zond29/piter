@@ -310,9 +310,9 @@ if not df.empty:
                     render_card(row)
 
                     if st.button("✏️", key=f"edit_{row['id']}"):
-                        st.session_state[f"show_edit_{row['id']}"] = True
+                        st.session_state[f"show_edit_{row['id']}"] = not st.session_state.get(f"show_edit_{row['id']}", False)
                         st.rerun()
-                    if st.button("🗑", key=f"del_{row['id']}"):
+                    if st.button("❌", key=f"del_{row['id']}"):
                         delete_place_from_db(row['id'])
                         st.rerun()
 
