@@ -136,23 +136,32 @@ FULL_CSS = f"""
     --border: #E0E0E0;
     --shadow: rgba(0,0,0,0.05);
     --shadow-hover: rgba(0,0,0,0.1);
+    color-scheme: light dark;
 }}
 
 {theme_vars_css}
 
-* {{ font-family: 'Inter', sans-serif; }}
+* {{ 
+    font-family: 'Inter', sans-serif; 
+    -webkit-tap-highlight-color: transparent; 
+}}
 
 [data-testid="stToolbar"], [data-testid="stAppDeployButton"], #MainMenu, footer {{ display: none !important; }}
 
 [data-testid="stAppViewContainer"], [data-testid="stMain"], [data-testid="stSidebar"] {{
-    background-color: var(--page-bg);
-    color: var(--text);
+    background-color: var(--page-bg) !important;
+    color: var(--text) !important;
 }}
 
-/* Усиленное исправление вкладок для всех состояний */
+/* Фикс вкладок для Safari и мобильных */
+div[data-baseweb="tab-list"] {{
+    border-bottom: 1px solid var(--border) !important;
+    background: transparent !important;
+}}
+
 button[data-baseweb="tab"] {{
-    background-color: transparent !important;
     color: var(--text) !important;
+    background-color: transparent !important;
     border: none !important;
 }}
 
@@ -161,19 +170,13 @@ button[data-baseweb="tab"][aria-selected="true"] {{
     border-bottom: 2px solid #FF4B4B !important;
 }}
 
-div[data-baseweb="tab-list"] {{
-    background-color: transparent !important;
-    border-bottom: 1px solid var(--border) !important;
+/* Принудительный цвет текста и рамок */
+p, div, span, h1, h2, h3, h4, label {{
+    color: var(--text) !important;
 }}
 
-/* Общие элементы */
-[data-baseweb="tab"] p,
-[data-testid="stWidgetLabel"] p,
-[data-testid="stExpander"] summary,
-[data-testid="stExpander"] summary span,
-.stSubheader,
-[data-testid="stMarkdownContainer"] h3 {{
-    color: var(--text) !important;
+[data-testid="stExpander"], [data-testid="stVerticalBlock"] {{
+    border-color: var(--border) !important;
 }}
 
 .main-title {{
@@ -185,143 +188,34 @@ div[data-baseweb="tab-list"] {{
     margin-bottom: 0.3rem;
 }}
 
-.subtitle {{
-    font-weight: 700;
-    font-size: 1.3rem;
-    color: var(--text);
-    margin: 6px 0 14px 0;
-}}
-
 .place-card {{
-    background-color: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 16px 18px;
-    margin-bottom: 16px;
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 16px !important;
+    padding: 16px 18px !important;
+    margin-bottom: 16px !important;
     max-width: 420px;
-    box-shadow: 0px 4px 16px var(--shadow);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}}
-
-.place-card:hover {{
-    transform: translateY(-3px);
-    box-shadow: 0px 8px 24px var(--shadow-hover);
+    box-shadow: 0px 4px 16px var(--shadow) !important;
 }}
 
 .place-card i {{
     margin-right: 8px;
     color: #FF4B4B;
-    font-size: 1.05rem;
 }}
-
-.place-card h3, .place-card h4 {{
-    color: var(--text) !important;
-    font-weight: 700 !important;
-}}
-
-.place-img {{
-    object-fit: cover;
-    border-radius: 12px;
-    width: 100%;
-    height: 170px;
-    margin: 10px 0;
-}}
-
-.badge {{
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    margin-bottom: 10px;
-}}
-.badge-love {{ background-color: #FFE5E5; color: #FF4B4B; }}
-.badge-plan {{ background-color: #EAF2FF; color: #1E62FF; }}
 
 .place-desc {{
-    color: var(--desc-text);
-    font-size: 0.92rem;
-    line-height: 1.5;
-    margin-bottom: 10px;
+    color: var(--desc-text) !important;
 }}
 
 div[data-testid="stButton"] button {{
     border: 1px solid var(--border) !important;
-    border-radius: 10px !important;
     background-color: var(--card-bg) !important;
     color: var(--text) !important;
-    font-weight: 500 !important;
-    padding: 4px 0 !important;
-    min-height: 0 !important;
-    box-shadow: 0px 1px 4px var(--shadow) !important;
-    transition: border-color 0.2s ease, color 0.2s ease !important;
-}}
-div[data-testid="stButton"] button:hover {{
-    border-color: #FF4B4B !important;
-    color: #FF4B4B !important;
-}}
-div[data-testid="stButton"] button p {{
-    color: inherit !important;
-    font-size: 0.82rem !important;
 }}
 
-div[class*="st-key-card_"] {{
-    position: relative;
-}}
-div[class*="st-key-card_"] > div:nth-child(2) {{
-    position: absolute;
-    top: 14px;
-    right: 54px;
-    z-index: 2;
-    width: auto !important;
-}}
-div[class*="st-key-card_"] > div:nth-child(3) {{
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    z-index: 2;
-    width: auto !important;
-}}
-div[class*="st-key-card_"] > div:nth-child(2) button,
-div[class*="st-key-card_"] > div:nth-child(3) button {{
-    width: 34px !important;
-    height: 34px !important;
-    padding: 0 !important;
-    min-height: 0 !important;
-    border-radius: 50% !important;
-    border: 1px solid var(--border) !important;
-    background-color: var(--card-bg) !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
-    opacity: 0.5;
-    filter: grayscale(1);
-    transition: opacity 0.2s ease, filter 0.2s ease !important;
-}}
-div[class*="st-key-card_"] > div:nth-child(2) button:hover,
-div[class*="st-key-card_"] > div:nth-child(3) button:hover {{
-    opacity: 1;
-    filter: none;
-    border-color: #FF4B4B !important;
-}}
-div[class*="st-key-theme_toggle_btn"] {{
-    position: fixed;
-    top: 70px;
-    right: 18px;
-    z-index: 999999;
-    width: auto !important;
-}}
 div[class*="st-key-theme_toggle_btn"] button {{
-    width: 52px !important;
-    height: 52px !important;
-    padding: 0 !important;
-    min-height: 0 !important;
-    border-radius: 50% !important;
     border: 1px solid var(--border) !important;
     background-color: var(--card-bg) !important;
-    box-shadow: 0 3px 10px var(--shadow) !important;
-}}
-div[class*="st-key-theme_toggle_btn"] button p {{
-    font-size: 1.6rem !important;
-    line-height: 1 !important;
 }}
 """
 
