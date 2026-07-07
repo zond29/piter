@@ -221,7 +221,7 @@ if st.button(theme_icon, key="theme_toggle_btn"):
     st.rerun()
 
 
-with st.expander("➕ Добавить новое место", expanded=False):
+with st.expander(" Добавить новое место", expanded=False):
     with st.form("add_place_form", clear_on_submit=True):
         new_name = st.text_input("Название места:")
         col_cat, col_stat = st.columns(2)
