@@ -152,6 +152,11 @@ FULL_CSS = f"""
     color: var(--text);
 }}
 
+/* Исправления для iPhone (Safari) */
+div[data-baseweb="tab-list"] {{ border-bottom: 1px solid var(--border) !important; background: transparent !important; }}
+button[data-baseweb="tab"] {{ color: var(--text) !important; background-color: transparent !important; border: none !important; }}
+button[data-baseweb="tab"][aria-selected="true"] {{ color: #FF4B4B !important; border-bottom: 2px solid #FF4B4B !important; }}
+
 [data-baseweb="tab"] p,
 [data-testid="stWidgetLabel"] p,
 [data-testid="stExpander"] summary,
@@ -250,64 +255,26 @@ div[data-testid="stButton"] button p {{
     font-size: 0.82rem !important;
 }}
 
-div[class*="st-key-card_"] {{
-    position: relative;
-}}
-div[class*="st-key-card_"] > div:nth-child(2) {{
-    position: absolute;
-    top: 14px;
-    right: 54px;
-    z-index: 2;
-    width: auto !important;
-}}
-div[class*="st-key-card_"] > div:nth-child(3) {{
-    position: absolute;
-    top: 14px;
-    right: 14px;
-    z-index: 2;
-    width: auto !important;
-}}
+div[class*="st-key-card_"] {{ position: relative; }}
+div[class*="st-key-card_"] > div:nth-child(2) {{ position: absolute; top: 14px; right: 54px; z-index: 2; width: auto !important; }}
+div[class*="st-key-card_"] > div:nth-child(3) {{ position: absolute; top: 14px; right: 14px; z-index: 2; width: auto !important; }}
 div[class*="st-key-card_"] > div:nth-child(2) button,
 div[class*="st-key-card_"] > div:nth-child(3) button {{
-    width: 34px !important;
-    height: 34px !important;
-    padding: 0 !important;
-    min-height: 0 !important;
-    border-radius: 50% !important;
-    border: 1px solid var(--border) !important;
-    background-color: var(--card-bg) !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important;
-    opacity: 0.5;
-    filter: grayscale(1);
+    width: 34px !important; height: 34px !important; padding: 0 !important; min-height: 0 !important;
+    border-radius: 50% !important; border: 1px solid var(--border) !important; background-color: var(--card-bg) !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15) !important; opacity: 0.5; filter: grayscale(1);
     transition: opacity 0.2s ease, filter 0.2s ease !important;
 }}
 div[class*="st-key-card_"] > div:nth-child(2) button:hover,
-div[class*="st-key-card_"] > div:nth-child(3) button:hover {{
-    opacity: 1;
-    filter: none;
-    border-color: #FF4B4B !important;
-}}
-div[class*="st-key-theme_toggle_btn"] {{
-    position: fixed;
-    top: 70px;
-    right: 18px;
-    z-index: 999999;
-    width: auto !important;
-}}
+div[class*="st-key-card_"] > div:nth-child(3) button:hover {{ opacity: 1; filter: none; border-color: #FF4B4B !important; }}
+
+div[class*="st-key-theme_toggle_btn"] {{ position: fixed; top: 70px; right: 18px; z-index: 999999; width: auto !important; }}
 div[class*="st-key-theme_toggle_btn"] button {{
-    width: 52px !important;
-    height: 52px !important;
-    padding: 0 !important;
-    min-height: 0 !important;
-    border-radius: 50% !important;
-    border: 1px solid var(--border) !important;
-    background-color: var(--card-bg) !important;
+    width: 52px !important; height: 52px !important; padding: 0 !important; min-height: 0 !important;
+    border-radius: 50% !important; border: 1px solid var(--border) !important; background-color: var(--card-bg) !important;
     box-shadow: 0 3px 10px var(--shadow) !important;
 }}
-div[class*="st-key-theme_toggle_btn"] button p {{
-    font-size: 1.6rem !important;
-    line-height: 1 !important;
-}}
+div[class*="st-key-theme_toggle_btn"] button p {{ font-size: 1.6rem !important; line-height: 1 !important; }}
 """
 
 
