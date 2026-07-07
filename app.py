@@ -78,7 +78,6 @@ FULL_CSS = f"""
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
 
-{theme_vars_css}
 
 * {{ font-family: 'Inter', sans-serif; }}
 
