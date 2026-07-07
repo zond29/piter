@@ -81,14 +81,6 @@ st.set_page_config(page_title="Ходилки бродилки по Питеру
 if "theme" not in st.session_state:
     st.session_state.theme = "Системная"
 
-with st.sidebar:
-    st.markdown("### ⚙️ Настройки")
-    st.session_state.theme = st.selectbox(
-        "Тема оформления:",
-        ["Системная", "Светлая", "Тёмная"],
-        index=["Системная", "Светлая", "Тёмная"].index(st.session_state.theme)
-    )
-
 
 LIGHT_VARS = """
 --page-bg: #FFFFFF;
@@ -109,6 +101,7 @@ DARK_VARS = """
 --shadow-hover: rgba(0,0,0,0.5);
 """
 
+
 LIGHT_STREAMLIT_VARS = """
 --text-color: #1A1A1A;
 --background-color: #FFFFFF;
@@ -124,7 +117,7 @@ if st.session_state.theme == "Светлая":
     theme_vars_css = f":root {{ {LIGHT_VARS} {LIGHT_STREAMLIT_VARS} }}"
 elif st.session_state.theme == "Тёмная":
     theme_vars_css = f":root {{ {DARK_VARS} {DARK_STREAMLIT_VARS} }}"
-else:  # Системная
+else:  
     theme_vars_css = f"""
     :root {{ {LIGHT_VARS} {LIGHT_STREAMLIT_VARS} }}
     @media (prefers-color-scheme: dark) {{
@@ -158,7 +151,8 @@ FULL_CSS = f"""
     color: var(--text);
 }}
 
-
+/* Родные элементы Streamlit (вкладки, подписи полей, заголовки блоков),
+   которые раньше могли оставаться белыми поверх светлого фона на телефоне */
 [data-baseweb="tab"] p,
 [data-testid="stWidgetLabel"] p,
 [data-testid="stExpander"] summary,
@@ -305,10 +299,27 @@ div[class*="st-key-card_"] > div:nth-child(3) button p {{
 st.markdown(f"<style>{clean_css(FULL_CSS)}</style>", unsafe_allow_html=True)
 
 
-st.markdown("<h1 class='main-title'>Ходилки бродилки по Питеру</h1>", unsafe_allow_html=True)
+col_title, col_sun, col_moon, col_sys = st.columns([6, 1, 1, 1])
+with col_title:
+    st.markdown("<h1 class='main-title'>Ходилки бродилки по Питеру</h1>", unsafe_allow_html=True)
+with col_sun:
+    label = "☀️ •" if st.session_state.theme == "Светлая" else "☀️"
+    if st.button(label, key="theme_light_btn"):
+        st.session_state.theme = "Светлая"
+        st.rerun()
+with col_moon:
+    label = "🌙 •" if st.session_state.theme == "Тёмная" else "🌙"
+    if st.button(label, key="theme_dark_btn"):
+        st.session_state.theme = "Тёмная"
+        st.rerun()
+with col_sys:
+    label = "💻 •" if st.session_state.theme == "Системная" else "💻"
+    if st.button(label, key="theme_system_btn"):
+        st.session_state.theme = "Системная"
+        st.rerun()
 
 
-with st.expander("➕ Добавить новое место", expanded=False):
+with st.expander(" Добавить новое место", expanded=False):
     with st.form("add_place_form", clear_on_submit=True):
         new_name = st.text_input("Название места:")
         col_cat, col_stat = st.columns(2)
@@ -358,7 +369,10 @@ def render_card(row):
     """, unsafe_allow_html=True)
 
 
-
+# Загружаем данные и сразу отсекаем записи с категориями, которых больше нет
+# в CATEGORY_ICONS (например, оставшиеся в базе от старых названий категорий).
+# Без этого рандомайзер мог предложить место, которое не отображается
+# ни в одной вкладке "Подборки мест".
 df = get_data()
 df = df[df["category"].isin(CATEGORY_ICONS.keys())].reset_index(drop=True)
 df = df[df["category"].isin(CATEGORY_ICONS.keys())].reset_index(drop=True)
