@@ -241,7 +241,7 @@ st.markdown(f"<style>{clean_css(FULL_CSS)}</style>", unsafe_allow_html=True)
 st.markdown("<h1 class='main-title'>Ходилки бродилки по Питеру</h1>", unsafe_allow_html=True)
 
 
-with st.expander(" Добавить новое место", expanded=False):
+with st.expander("➕ Добавить новое место", expanded=False):
     with st.form("add_place_form", clear_on_submit=True):
         new_name = st.text_input("Название места:")
         col_cat, col_stat = st.columns(2)
@@ -305,10 +305,18 @@ if not df.empty:
         st.subheader("🎲 Не знаете куда пойти?")
         if st.button("Выбрать случайное место", use_container_width=True):
             random_place = df.iloc[random.randint(0, len(df) - 1)]
-            render_card(random_place)
+            st.session_state["random_place_id"] = random_place["id"]
+
+        if st.session_state.get("random_place_id") is not None:
+            match = df[df["id"] == st.session_state["random_place_id"]]
+            if not match.empty:
+                render_card(match.iloc[0])
+                if st.button("Свернуть", key="collapse_random", use_container_width=True):
+                    st.session_state["random_place_id"] = None
+                    st.rerun()
 
     st.markdown("<br><h3 style='font-weight:700;'>Подборка мест</h3>", unsafe_allow_html=True)
-    tab_eat, tab_walk, tab_exh = st.tabs([" Где поесть", " Где погулять", " Музеи"])
+    tab_eat, tab_walk, tab_exh = st.tabs(["🍽 Где поесть", "🚶 Где погулять", "🖼 Музеи"])
 
     def render_grid(filtered_df):
         if filtered_df.empty:
