@@ -152,7 +152,6 @@ FULL_CSS = f"""
     color: var(--text);
 }}
 
-
 [data-baseweb="tab"] p,
 [data-testid="stWidgetLabel"] p,
 [data-testid="stExpander"] summary,
@@ -231,7 +230,6 @@ FULL_CSS = f"""
     margin-bottom: 10px;
 }}
 
-
 div[data-testid="stButton"] button {{
     border: 1px solid var(--border) !important;
     border-radius: 10px !important;
@@ -251,7 +249,6 @@ div[data-testid="stButton"] button p {{
     color: inherit !important;
     font-size: 0.82rem !important;
 }}
-
 
 div[class*="st-key-card_"] {{
     position: relative;
@@ -311,7 +308,6 @@ div[class*="st-key-theme_toggle_btn"] button p {{
     font-size: 1.6rem !important;
     line-height: 1 !important;
 }}
-"""
 """
 
 
