@@ -190,7 +190,6 @@ st.markdown(f"<style>{clean_css(FULL_CSS)}</style>", unsafe_allow_html=True)
 
 
 st.markdown("<h1 class='main-title'>Ходилки бродилки по Питеру</h1>", unsafe_allow_html=True)
-st.markdown("<div class='subtitle'>📍 Подборка мест</div>", unsafe_allow_html=True)
 
 
 with st.expander("➕ Добавить новое место", expanded=False):
@@ -250,7 +249,7 @@ if not df.empty:
             random_place = df.iloc[random.randint(0, len(df) - 1)]
             render_card(random_place)
 
-    st.markdown("<br><h3 style='font-weight:700;'>Все места</h3>", unsafe_allow_html=True)
+    st.markdown("<br><h3 style='font-weight:700;'> Подборка мест</h3>", unsafe_allow_html=True)
     tab_eat, tab_walk, tab_exh = st.tabs([" Где покушать", " Где погулять", " Выставки"])
 
     def render_grid(filtered_df):
