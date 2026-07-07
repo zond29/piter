@@ -141,10 +141,7 @@ FULL_CSS = f"""
 
 {theme_vars_css}
 
-* {{ 
-    font-family: 'Inter', sans-serif; 
-    -webkit-tap-highlight-color: transparent; 
-}}
+* {{ font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }}
 
 [data-testid="stToolbar"], [data-testid="stAppDeployButton"], #MainMenu, footer {{ display: none !important; }}
 
@@ -153,31 +150,13 @@ FULL_CSS = f"""
     color: var(--text) !important;
 }}
 
-/* Фикс вкладок для Safari и мобильных */
-div[data-baseweb="tab-list"] {{
-    border-bottom: 1px solid var(--border) !important;
-    background: transparent !important;
-}}
+/* Фикс вкладок */
+div[data-baseweb="tab-list"] {{ border-bottom: 1px solid var(--border) !important; background: transparent !important; }}
+button[data-baseweb="tab"] {{ color: var(--text) !important; background-color: transparent !important; border: none !important; }}
+button[data-baseweb="tab"][aria-selected="true"] {{ color: #FF4B4B !important; border-bottom: 2px solid #FF4B4B !important; }}
 
-button[data-baseweb="tab"] {{
-    color: var(--text) !important;
-    background-color: transparent !important;
-    border: none !important;
-}}
-
-button[data-baseweb="tab"][aria-selected="true"] {{
-    color: #FF4B4B !important;
-    border-bottom: 2px solid #FF4B4B !important;
-}}
-
-/* Принудительный цвет текста и рамок */
-p, div, span, h1, h2, h3, h4, label {{
-    color: var(--text) !important;
-}}
-
-[data-testid="stExpander"], [data-testid="stVerticalBlock"] {{
-    border-color: var(--border) !important;
-}}
+/* Цвет текста и рамок для iOS */
+p, div, span, h1, h2, h3, h4, label {{ color: var(--text) !important; }}
 
 .main-title {{
     font-size: 2.8rem;
@@ -198,27 +177,32 @@ p, div, span, h1, h2, h3, h4, label {{
     box-shadow: 0px 4px 16px var(--shadow) !important;
 }}
 
-.place-card i {{
-    margin-right: 8px;
-    color: #FF4B4B;
-}}
+.place-card i {{ margin-right: 8px; color: #FF4B4B; }}
+.place-desc {{ color: var(--desc-text) !important; }}
 
-.place-desc {{
-    color: var(--desc-text) !important;
-}}
-
+/* Кнопки действий */
 div[data-testid="stButton"] button {{
     border: 1px solid var(--border) !important;
+    border-radius: 10px !important;
     background-color: var(--card-bg) !important;
     color: var(--text) !important;
 }}
 
+/* Позиционирование кнопок внутри карточек (редактировать/удалить) */
+div[class*="st-key-card_"] > div:nth-child(2) {{ position: absolute; top: 14px; right: 54px; z-index: 2; }}
+div[class*="st-key-card_"] > div:nth-child(3) {{ position: absolute; top: 14px; right: 14px; z-index: 2; }}
+div[class*="st-key-card_"] button {{ 
+    width: 34px !important; height: 34px !important; padding: 0 !important; border-radius: 50% !important; 
+    border: 1px solid var(--border) !important; background-color: var(--card-bg) !important; opacity: 0.5;
+}}
+
+/* Переключатель темы */
+div[class*="st-key-theme_toggle_btn"] {{ position: fixed; top: 70px; right: 18px; z-index: 999999; }}
 div[class*="st-key-theme_toggle_btn"] button {{
-    border: 1px solid var(--border) !important;
-    background-color: var(--card-bg) !important;
+    width: 52px !important; height: 52px !important; border-radius: 50% !important;
+    border: 1px solid var(--border) !important; background-color: var(--card-bg) !important;
 }}
 """
-
 
 st.markdown(f"<style>{clean_css(FULL_CSS)}</style>", unsafe_allow_html=True)
 
