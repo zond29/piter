@@ -124,8 +124,6 @@ else:  # Системная
         :root {{ {DARK_VARS} {DARK_STREAMLIT_VARS} color-scheme: dark; }}
     }}
     """
-
-
 FULL_CSS = f"""
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
@@ -151,8 +149,15 @@ FULL_CSS = f"""
     color: var(--text);
 }}
 
-/* Родные элементы Streamlit (вкладки, подписи полей, заголовки блоков),
-   которые раньше могли оставаться белыми поверх светлого фона на телефоне */
+/* Исправление вкладок */
+[data-baseweb="tab"] {{
+    color: var(--text) !important;
+}}
+
+[data-baseweb="tab-list"] button[aria-selected="true"] {{
+    color: #FF4B4B !important; /* Цвет активной вкладки */
+}}
+
 [data-baseweb="tab"] p,
 [data-testid="stWidgetLabel"] p,
 [data-testid="stExpander"] summary,
@@ -160,28 +165,6 @@ FULL_CSS = f"""
 .stSubheader,
 [data-testid="stMarkdownContainer"] h3 {{
     color: var(--text) !important;
-}}
-
-/* Усиленное правило для вкладок: перекрывает системную тёмную/светлую
-   тему телефона, из-за которой неактивные вкладки становились белыми
-   на белом фоне */
-[data-baseweb="tab-list"] {{
-    background-color: transparent !important;
-}}
-[data-baseweb="tab"],
-[data-baseweb="tab"] * {{
-    color: var(--text) !important;
-    opacity: 1 !important;
-}}
-[data-baseweb="tab"][aria-selected="true"],
-[data-baseweb="tab"][aria-selected="true"] * {{
-    color: #FF4B4B !important;
-}}
-[data-baseweb="tab-highlight"] {{
-    background-color: #FF4B4B !important;
-}}
-[data-baseweb="tab-border"] {{
-    background-color: var(--border) !important;
 }}
 
 .main-title {{
@@ -253,7 +236,6 @@ FULL_CSS = f"""
     margin-bottom: 10px;
 }}
 
-
 div[data-testid="stButton"] button {{
     border: 1px solid var(--border) !important;
     border-radius: 10px !important;
@@ -273,7 +255,6 @@ div[data-testid="stButton"] button p {{
     color: inherit !important;
     font-size: 0.82rem !important;
 }}
-
 
 div[class*="st-key-card_"] {{
     position: relative;
