@@ -6,7 +6,7 @@ import random
 DB_NAME = "piter.db"
 
 CATEGORY_ICONS = {
-    "Где поестьь": "fa-solid fa-burger",
+    "Где поесть": "fa-solid fa-burger",
     "Где погулять": "fa-solid fa-map-location-dot",
     "Музеи": "fa-solid fa-palette",
 }
