@@ -78,6 +78,61 @@ init_db()
 st.set_page_config(page_title="Ходилки бродилки по Питеру", page_icon="❤️", layout="centered")
 
 
+if "theme" not in st.session_state:
+    st.session_state.theme = "Системная"
+
+with st.sidebar:
+    st.markdown("### ⚙️ Настройки")
+    st.session_state.theme = st.selectbox(
+        "Тема оформления:",
+        ["Системная", "Светлая", "Тёмная"],
+        index=["Системная", "Светлая", "Тёмная"].index(st.session_state.theme)
+    )
+
+
+LIGHT_VARS = """
+--page-bg: #FFFFFF;
+--card-bg: #FFFFFF;
+--text: #1A1A1A;
+--desc-text: #444444;
+--border: #E0E0E0;
+--shadow: rgba(0,0,0,0.05);
+--shadow-hover: rgba(0,0,0,0.1);
+"""
+DARK_VARS = """
+--page-bg: #0E1117;
+--card-bg: #1B1E27;
+--text: #FAFAFA;
+--desc-text: #C7C7CC;
+--border: #2E313C;
+--shadow: rgba(0,0,0,0.35);
+--shadow-hover: rgba(0,0,0,0.5);
+"""
+
+LIGHT_STREAMLIT_VARS = """
+--text-color: #1A1A1A;
+--background-color: #FFFFFF;
+--secondary-background-color: #F0F2F6;
+"""
+DARK_STREAMLIT_VARS = """
+--text-color: #FAFAFA;
+--background-color: #0E1117;
+--secondary-background-color: #262730;
+"""
+
+if st.session_state.theme == "Светлая":
+    theme_vars_css = f":root {{ {LIGHT_VARS} {LIGHT_STREAMLIT_VARS} }}"
+elif st.session_state.theme == "Тёмная":
+    theme_vars_css = f":root {{ {DARK_VARS} {DARK_STREAMLIT_VARS} }}"
+else:  # Системная
+    theme_vars_css = f"""
+    :root {{ {LIGHT_VARS} {LIGHT_STREAMLIT_VARS} }}
+    @media (prefers-color-scheme: dark) {{
+        :root {{ {DARK_VARS} {DARK_STREAMLIT_VARS} }}
+    }}
+    """
+
+
 FULL_CSS = f"""
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
@@ -92,6 +147,8 @@ FULL_CSS = f"""
     --shadow-hover: rgba(0,0,0,0.1);
 }}
 
+{theme_vars_css}
+
 * {{ font-family: 'Inter', sans-serif; }}
 
 [data-testid="stToolbar"], [data-testid="stAppDeployButton"], #MainMenu, footer {{ display: none !important; }}
@@ -99,6 +156,16 @@ FULL_CSS = f"""
 [data-testid="stAppViewContainer"], [data-testid="stMain"], [data-testid="stSidebar"] {{
     background-color: var(--page-bg);
     color: var(--text);
+}}
+
+
+[data-baseweb="tab"] p,
+[data-testid="stWidgetLabel"] p,
+[data-testid="stExpander"] summary,
+[data-testid="stExpander"] summary span,
+.stSubheader,
+[data-testid="stMarkdownContainer"] h3 {{
+    color: var(--text) !important;
 }}
 
 .main-title {{
@@ -241,7 +308,7 @@ st.markdown(f"<style>{clean_css(FULL_CSS)}</style>", unsafe_allow_html=True)
 st.markdown("<h1 class='main-title'>Ходилки бродилки по Питеру</h1>", unsafe_allow_html=True)
 
 
-with st.expander(" Добавить новое место", expanded=False):
+with st.expander("➕ Добавить новое место", expanded=False):
     with st.form("add_place_form", clear_on_submit=True):
         new_name = st.text_input("Название места:")
         col_cat, col_stat = st.columns(2)
@@ -291,10 +358,7 @@ def render_card(row):
     """, unsafe_allow_html=True)
 
 
-# Загружаем данные и сразу отсекаем записи с категориями, которых больше нет
-# в CATEGORY_ICONS (например, оставшиеся в базе от старых названий категорий).
-# Без этого рандомайзер мог предложить место, которое не отображается
-# ни в одной вкладке "Подборки мест".
+
 df = get_data()
 df = df[df["category"].isin(CATEGORY_ICONS.keys())].reset_index(drop=True)
 df = df[df["category"].isin(CATEGORY_ICONS.keys())].reset_index(drop=True)
