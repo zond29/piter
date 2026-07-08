@@ -11,8 +11,6 @@ CATEGORY_ICONS = {
 
 DEFAULT_IMAGE = "https://images.unsplash.com/photo-1599946347371-68eb71b16afc?w=800"
 
-# Подключение к внешней PostgreSQL базе (Supabase).
-# Настройки берутся из .streamlit/secrets.toml -> [connections.sql] -> url
 conn = st.connection("sql", type="sql")
 
 
@@ -32,7 +30,6 @@ def init_db():
 
 
 def load_data():
-    # ttl=0 означает "не кэшировать" - всегда свежие данные из базы
     df = conn.query("SELECT * FROM places", ttl=0)
     return df
 
@@ -154,12 +151,12 @@ FULL_CSS = f"""
     color: var(--text) !important;
 }}
 
-/* Фикс вкладок для Safari */
+
 div[data-baseweb="tab-list"] {{ border-bottom: 1px solid var(--border) !important; background: transparent !important; }}
 button[data-baseweb="tab"] {{ color: var(--text) !important; background-color: transparent !important; border: none !important; }}
 button[data-baseweb="tab"][aria-selected="true"] {{ color: #FF4B4B !important; border-bottom: 2px solid #FF4B4B !important; }}
 
-/* Принудительный цвет текста и рамок для iOS */
+
 p, div, span, h1, h2, h3, h4, label {{ color: var(--text) !important; }}
 [data-testid="stExpander"], [data-testid="stVerticalBlock"] {{ border-color: var(--border) !important; }}
 
@@ -186,7 +183,7 @@ p, div, span, h1, h2, h3, h4, label {{ color: var(--text) !important; }}
 .place-card i {{ margin-right: 8px; color: #FF4B4B; }}
 .place-desc {{ color: var(--desc-text) !important; }}
 
-/* Бейджи статуса места */
+
 .badge {{
     display: inline-block;
     padding: 4px 12px;
@@ -204,7 +201,7 @@ p, div, span, h1, h2, h3, h4, label {{ color: var(--text) !important; }}
     color: #3B82F6 !important;
 }}
 
-/* Кнопки действий (верстка как была) */
+
 div[data-testid="stButton"] button {{
     border: 1px solid var(--border) !important;
     border-radius: 10px !important;
@@ -212,13 +209,30 @@ div[data-testid="stButton"] button {{
     color: var(--text) !important;
 }}
 
-/* Позиционирование кнопок внутри карточек */
+
 div[class*="st-key-card_"] {{ position: relative; }}
 div[class*="st-key-card_"] > div:nth-child(2) {{ position: absolute; top: 14px; right: 54px; z-index: 2; }}
 div[class*="st-key-card_"] > div:nth-child(3) {{ position: absolute; top: 14px; right: 14px; z-index: 2; }}
 div[class*="st-key-card_"] button {{
     width: 34px !important; height: 34px !important; padding: 0 !important; border-radius: 50% !important;
     border: 1px solid var(--border) !important; background-color: var(--card-bg) !important; opacity: 0.5;
+}}
+
+/* Фикс выпадающего меню селектов (ломалось в тёмной теме) */
+div[data-baseweb="popover"],
+ul[data-baseweb="menu"] {{
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border) !important;
+}}
+li[data-baseweb="menu-item"],
+li[role="option"] {{
+    background-color: var(--card-bg) !important;
+    color: var(--text) !important;
+}}
+li[data-baseweb="menu-item"]:hover,
+li[role="option"]:hover,
+li[aria-selected="true"] {{
+    background-color: var(--border) !important;
 }}
 
 /* Переключатель темы */
