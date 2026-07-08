@@ -186,6 +186,24 @@ p, div, span, h1, h2, h3, h4, label {{ color: var(--text) !important; }}
 .place-card i {{ margin-right: 8px; color: #FF4B4B; }}
 .place-desc {{ color: var(--desc-text) !important; }}
 
+/* Бейджи статуса места */
+.badge {{
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+}}
+.badge-love {{
+    background-color: rgba(255, 75, 75, 0.12) !important;
+    color: #FF4B4B !important;
+}}
+.badge-plan {{
+    background-color: rgba(59, 130, 246, 0.12) !important;
+    color: #3B82F6 !important;
+}}
+
 /* Кнопки действий (верстка как была) */
 div[data-testid="stButton"] button {{
     border: 1px solid var(--border) !important;
