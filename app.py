@@ -1,9 +1,7 @@
 import streamlit as st
 import pandas as pd
-import sqlite3
 import random
-
-DB_NAME = "piter.db"
+from sqlalchemy import text
 
 CATEGORY_ICONS = {
     "Где поесть": "fa-solid fa-burger",
@@ -13,60 +11,64 @@ CATEGORY_ICONS = {
 
 DEFAULT_IMAGE = "https://images.unsplash.com/photo-1599946347371-68eb71b16afc?w=800"
 
+# Подключение к внешней PostgreSQL базе (Supabase).
+# Настройки берутся из .streamlit/secrets.toml -> [connections.sql] -> url
+conn = st.connection("sql", type="sql")
+
 
 def init_db():
-    conn = sqlite3.connect(DB_NAME)
-    conn.execute('''
-        CREATE TABLE IF NOT EXISTS places (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            category TEXT NOT NULL,
-            status TEXT NOT NULL,
-            image TEXT,
-            review TEXT
-        )
-    ''')
-    conn.commit()
-    conn.close()
+    with conn.session as s:
+        s.execute(text('''
+            CREATE TABLE IF NOT EXISTS places (
+                id SERIAL PRIMARY KEY,
+                name TEXT NOT NULL,
+                category TEXT NOT NULL,
+                status TEXT NOT NULL,
+                image TEXT,
+                review TEXT
+            )
+        '''))
+        s.commit()
 
 
-@st.cache_data(ttl=0)
 def load_data():
-    conn = sqlite3.connect(DB_NAME)
-    df = pd.read_sql_query("SELECT * FROM places", conn)
-    conn.close()
+    # ttl=0 означает "не кэшировать" - всегда свежие данные из базы
+    df = conn.query("SELECT * FROM places", ttl=0)
     return df
 
+
 def get_data():
-    st.cache_data.clear()
     return load_data()
 
 
 def add_place_to_db(name, category, status, image, review):
-    conn = sqlite3.connect(DB_NAME)
-    conn.execute(
-        "INSERT INTO places (name, category, status, image, review) VALUES (?, ?, ?, ?, ?)",
-        (name, category, status, image, review)
-    )
-    conn.commit()
-    conn.close()
+    with conn.session as s:
+        s.execute(
+            text("""
+                INSERT INTO places (name, category, status, image, review)
+                VALUES (:name, :category, :status, :image, :review)
+            """),
+            {"name": name, "category": category, "status": status, "image": image, "review": review}
+        )
+        s.commit()
 
 
 def update_place_in_db(place_id, name, status, image, review):
-    conn = sqlite3.connect(DB_NAME)
-    conn.execute(
-        "UPDATE places SET name=?, status=?, image=?, review=? WHERE id=?",
-        (name, status, image, review, place_id)
-    )
-    conn.commit()
-    conn.close()
+    with conn.session as s:
+        s.execute(
+            text("""
+                UPDATE places SET name=:name, status=:status, image=:image, review=:review
+                WHERE id=:id
+            """),
+            {"name": name, "status": status, "image": image, "review": review, "id": int(place_id)}
+        )
+        s.commit()
 
 
 def delete_place_from_db(place_id):
-    conn = sqlite3.connect(DB_NAME)
-    conn.execute("DELETE FROM places WHERE id = ?", (place_id,))
-    conn.commit()
-    conn.close()
+    with conn.session as s:
+        s.execute(text("DELETE FROM places WHERE id = :id"), {"id": int(place_id)})
+        s.commit()
 
 
 def clean_css(css: str) -> str:
@@ -117,7 +119,7 @@ if st.session_state.theme == "Светлая":
     theme_vars_css = f":root {{ {LIGHT_VARS} {LIGHT_STREAMLIT_VARS} }}"
 elif st.session_state.theme == "Тёмная":
     theme_vars_css = f":root {{ {DARK_VARS} {DARK_STREAMLIT_VARS} }}"
-else: 
+else:
     theme_vars_css = f"""
     :root {{ {LIGHT_VARS} {LIGHT_STREAMLIT_VARS} }}
     @media (prefers-color-scheme: dark) {{
@@ -196,8 +198,8 @@ div[data-testid="stButton"] button {{
 div[class*="st-key-card_"] {{ position: relative; }}
 div[class*="st-key-card_"] > div:nth-child(2) {{ position: absolute; top: 14px; right: 54px; z-index: 2; }}
 div[class*="st-key-card_"] > div:nth-child(3) {{ position: absolute; top: 14px; right: 14px; z-index: 2; }}
-div[class*="st-key-card_"] button {{ 
-    width: 34px !important; height: 34px !important; padding: 0 !important; border-radius: 50% !important; 
+div[class*="st-key-card_"] button {{
+    width: 34px !important; height: 34px !important; padding: 0 !important; border-radius: 50% !important;
     border: 1px solid var(--border) !important; background-color: var(--card-bg) !important; opacity: 0.5;
 }}
 
@@ -271,10 +273,7 @@ def render_card(row):
     """, unsafe_allow_html=True)
 
 
-
 df = get_data()
-df = df[df["category"].isin(CATEGORY_ICONS.keys())].reset_index(drop=True)
-df = df[df["category"].isin(CATEGORY_ICONS.keys())].reset_index(drop=True)
 df = df[df["category"].isin(CATEGORY_ICONS.keys())].reset_index(drop=True)
 
 if not df.empty:
