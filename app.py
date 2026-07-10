@@ -202,9 +202,44 @@ p, div, span, h1, h2, h3, h4, label {{ color: var(--text) !important; }}
     margin-bottom: 16px !important;
     max-width: 420px;
     box-shadow: 0px 4px 16px var(--shadow) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    height: 380px !important;
+    overflow: hidden !important;
 }}
 .place-card i {{ margin-right: 8px; color: #FF4B4B; }}
 .place-desc {{ color: var(--desc-text) !important; }}
+
+.place-img {{
+    width: 100% !important;
+    height: 160px !important;
+    object-fit: cover !important;
+    border-radius: 10px !important;
+    display: block !important;
+    margin-bottom: 10px;
+    flex-shrink: 0;
+}}
+
+.place-card h4 {{
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    line-height: 1.25em;
+    max-height: 2.5em;
+    flex-shrink: 0;
+}}
+
+.place-desc {{
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    flex: 1;
+    font-size: 0.9rem;
+}}
 
 
 .badge {{
@@ -214,6 +249,7 @@ p, div, span, h1, h2, h3, h4, label {{ color: var(--text) !important; }}
     font-size: 0.78rem;
     font-weight: 600;
     margin-bottom: 8px;
+    flex-shrink: 0;
 }}
 .badge-love {{
     background-color: rgba(255, 75, 75, 0.12) !important;
