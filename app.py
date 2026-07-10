@@ -227,7 +227,9 @@ div[class*="st-key-card_"] > div:first-child {{ height: 100%; }}
     flex-direction: column;
 }}
 .place-card h4 {{
-    min-height: 2.6em;
+    line-height: 1.3em;
+    height: 3.9em;
+    min-height: 3.9em;
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
