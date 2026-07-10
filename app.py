@@ -215,7 +215,7 @@ p, div, span, h1, h2, h3, h4, label {{ color: var(--text) !important; }}
     height: 220px;
     object-fit: cover;
     border-radius: 10px;
-    margin: 8px 0;
+    margin: 4px 0 8px 0;
 }}
 
 [data-testid="stHorizontalBlock"] {{ align-items: stretch !important; }}
@@ -228,12 +228,6 @@ div[class*="st-key-card_"] > div:first-child {{ height: 100%; }}
 }}
 .place-card h4 {{
     line-height: 1.3em;
-    height: 3.9em;
-    min-height: 3.9em;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
 }}
 
 .place-title-link {{
@@ -385,8 +379,8 @@ def render_card(row):
     st.markdown(f"""
     <div class='place-card'>
         <span class='badge {badge_class(row['status'])}'>{row['status']}</span>
-        <h4 style='margin:0 0 8px 0;'><i class="{icon}"></i>{name_html}</h4>
         <img class='place-img' src='{row['image']}'>
+        <h4 style='margin:0 0 8px 0;'><i class="{icon}"></i>{name_html}</h4>
         {desc_html}
     </div>
     """, unsafe_allow_html=True)
