@@ -27,10 +27,6 @@ def init_db():
                 review TEXT
             )
         '''))
-
-        s.execute(text('''
-            ALTER TABLE places ADD COLUMN IF NOT EXISTS link TEXT
-        '''))
         s.commit()
 
 
@@ -44,26 +40,26 @@ def get_data():
     return load_data()
 
 
-def add_place_to_db(name, category, status, image, review, link):
+def add_place_to_db(name, category, status, image, review):
     with conn.session as s:
         s.execute(
             text("""
-                INSERT INTO places (name, category, status, image, review, link)
-                VALUES (:name, :category, :status, :image, :review, :link)
+                INSERT INTO places (name, category, status, image, review)
+                VALUES (:name, :category, :status, :image, :review)
             """),
-            {"name": name, "category": category, "status": status, "image": image, "review": review, "link": link}
+            {"name": name, "category": category, "status": status, "image": image, "review": review}
         )
         s.commit()
 
 
-def update_place_in_db(place_id, name, status, image, review, link):
+def update_place_in_db(place_id, name, status, image, review):
     with conn.session as s:
         s.execute(
             text("""
-                UPDATE places SET name=:name, status=:status, image=:image, review=:review, link=:link
+                UPDATE places SET name=:name, status=:status, image=:image, review=:review
                 WHERE id=:id
             """),
-            {"name": name, "status": status, "image": image, "review": review, "link": link, "id": int(place_id)}
+            {"name": name, "status": status, "image": image, "review": review, "id": int(place_id)}
         )
         s.commit()
 
@@ -210,35 +206,6 @@ p, div, span, h1, h2, h3, h4, label {{ color: var(--text) !important; }}
 .place-card i {{ margin-right: 8px; color: #FF4B4B; }}
 .place-desc {{ color: var(--desc-text) !important; }}
 
-.place-img {{
-    width: 100%;
-    height: 220px;
-    object-fit: cover;
-    border-radius: 10px;
-    margin: 4px 0 8px 0;
-}}
-
-[data-testid="stHorizontalBlock"] {{ align-items: stretch !important; }}
-div[class*="st-key-card_"] {{ height: 100% !important; }}
-div[class*="st-key-card_"] > div:first-child {{ height: 100%; }}
-.place-card {{
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}}
-.place-card h4 {{
-    line-height: 1.3em;
-}}
-
-.place-title-link {{
-    text-decoration: none !important;
-    color: var(--text) !important;
-    cursor: pointer;
-}}
-.place-title-link:hover {{
-    text-decoration: underline !important;
-}}
-
 
 .badge {{
     display: inline-block;
@@ -337,7 +304,6 @@ with st.expander(" Добавить новое место", expanded=False):
             new_status = st.selectbox("Статус:", ["Хочу посетить", "Любимое место"])
 
         new_image = st.text_input("Ссылка на фото (URL):")
-        new_link = st.text_input("Ссылка на место / сайт мероприятия (URL):")
         new_review = st.text_area("Ваш комментарий / Описание:")
 
         submit_button = st.form_submit_button(label="Сохранить место", use_container_width=True)
@@ -350,8 +316,7 @@ if submit_button:
             new_category.strip(),
             new_status.strip(),
             final_image,
-            new_review.strip(),
-            new_link.strip() if new_link else None
+            new_review.strip()
         )
         st.success(f"Место «{new_name}» успешно сохранено!")
         st.balloons()
@@ -369,18 +334,11 @@ def badge_class(status):
 def render_card(row):
     icon = CATEGORY_ICONS.get(row["category"], "fa-solid fa-location-dot")
     desc_html = f"<p class='place-desc'>{row['review']}</p>" if row["review"] else ""
-
-    place_link = row.get("link") if hasattr(row, "get") else row["link"]
-    if place_link:
-        name_html = f"<a class='place-title-link' href='{place_link}' target='_blank' rel='noopener noreferrer'>{row['name']}</a>"
-    else:
-        name_html = row['name']
-
     st.markdown(f"""
     <div class='place-card'>
         <span class='badge {badge_class(row['status'])}'>{row['status']}</span>
+        <h4 style='margin:0 0 8px 0;'><i class="{icon}"></i>{row['name']}</h4>
         <img class='place-img' src='{row['image']}'>
-        <h4 style='margin:0 0 8px 0;'><i class="{icon}"></i>{name_html}</h4>
         {desc_html}
     </div>
     """, unsafe_allow_html=True)
@@ -435,10 +393,9 @@ if not df.empty:
                             if row['status'] in ["Хочу посетить", "Любимое место"] else 0
                         )
                         n_image = st.text_input("Фото", row['image'])
-                        n_link = st.text_input("Ссылка на место / сайт мероприятия", row['link'] if row['link'] else "")
                         n_review = st.text_area("Описание", row['review'])
                         if st.form_submit_button("Сохранить"):
-                            update_place_in_db(row['id'], n_name, n_status, n_image, n_review, n_link.strip() if n_link else None)
+                            update_place_in_db(row['id'], n_name, n_status, n_image, n_review)
                             st.session_state[f"show_edit_{row['id']}"] = False
                             st.rerun()
 
