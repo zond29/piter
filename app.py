@@ -27,7 +27,7 @@ def init_db():
                 review TEXT
             )
         '''))
-        
+
         s.execute(text('''
             ALTER TABLE places ADD COLUMN IF NOT EXISTS link TEXT
         '''))
@@ -216,6 +216,22 @@ p, div, span, h1, h2, h3, h4, label {{ color: var(--text) !important; }}
     object-fit: cover;
     border-radius: 10px;
     margin: 8px 0;
+}}
+
+[data-testid="stHorizontalBlock"] {{ align-items: stretch !important; }}
+div[class*="st-key-card_"] {{ height: 100% !important; }}
+div[class*="st-key-card_"] > div:first-child {{ height: 100%; }}
+.place-card {{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}}
+.place-card h4 {{
+    min-height: 2.6em;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }}
 
 .place-title-link {{
