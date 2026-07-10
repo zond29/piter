@@ -27,7 +27,7 @@ def init_db():
                 review TEXT
             )
         '''))
-
+        
         s.execute(text('''
             ALTER TABLE places ADD COLUMN IF NOT EXISTS link TEXT
         '''))
@@ -209,6 +209,14 @@ p, div, span, h1, h2, h3, h4, label {{ color: var(--text) !important; }}
 }}
 .place-card i {{ margin-right: 8px; color: #FF4B4B; }}
 .place-desc {{ color: var(--desc-text) !important; }}
+
+.place-img {{
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin: 8px 0;
+}}
 
 .place-title-link {{
     text-decoration: none !important;
